@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "127766882631",
+    "project_id": "move-7322b",
+    "storage_bucket": "move-7322b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127766882631:android:d714712044ad8aefd24462",
+        "android_client_info": {
+          "package_name": "com.leinaro.move"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "127766882631-f3gmdemjsc4hk45qi99etjlah4ko55rn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.leinaro.move",
+            "certificate_hash": "0286b895e8429e6ae8b5eb41a0408e2852785dbc"
+          }
+        },
+        {
+          "client_id": "127766882631-f900ogqniq4lge1d2d13jrcfkoi6eu31.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMvXReDOM_y_btgffQKe-qk9_w2oJPWeM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "127766882631-f900ogqniq4lge1d2d13jrcfkoi6eu31.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
