@@ -17,7 +17,6 @@ package com.leinaro.move.presentation.capture
 
 import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Vibrator
@@ -35,18 +34,6 @@ internal class BeepManager(private val activity: Activity) : MediaPlayer.OnError
   private var mediaPlayer: MediaPlayer? = null
   private var playBeep = false
   private var vibrate = false
-
-  @Synchronized fun updatePrefs() {
-    val prefs = activity.getPreferences(Context.MODE_PRIVATE)
-    playBeep = shouldBeep(prefs, activity)
-    vibrate = prefs.getBoolean(PreferencesActivity.KEY_VIBRATE, false)
-    if (playBeep && mediaPlayer == null) {
-      // The volume on STREAM_SYSTEM is not adjustable, and users found it too loud,
-      // so we now play on the music stream.
-      activity.volumeControlStream = AudioManager.STREAM_MUSIC
-      mediaPlayer = buildMediaPlayer(activity)
-    }
-  }
 
   @Synchronized fun playBeepSoundAndVibrate() {
     if (playBeep && mediaPlayer != null) {
@@ -84,7 +71,6 @@ internal class BeepManager(private val activity: Activity) : MediaPlayer.OnError
     } else {
       // possibly media player error, so release and recreate
       close()
-      updatePrefs()
     }
     return true
   }
@@ -96,24 +82,23 @@ internal class BeepManager(private val activity: Activity) : MediaPlayer.OnError
     }
   }
 
-  companion object {
-    private val TAG = BeepManager::class.java.simpleName
-    private const val BEEP_VOLUME = 0.10f
-    private const val VIBRATE_DURATION = 200L
-    private fun shouldBeep(prefs: SharedPreferences, context: Context): Boolean {
-      var shouldPlayBeep = prefs.getBoolean(PreferencesActivity.KEY_PLAY_BEEP, true)
-      if (shouldPlayBeep) {
-        // See if sound settings overrides this
-        val audioService = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        if (audioService.ringerMode != AudioManager.RINGER_MODE_NORMAL) {
-          shouldPlayBeep = false
-        }
-      }
-      return shouldPlayBeep
-    }
+  private fun shouldBeep(context: Context): Boolean {
+    // See if sound settings overrides this
+    val audioService = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    return audioService.ringerMode == AudioManager.RINGER_MODE_NORMAL
   }
 
   init {
-    updatePrefs()
+    playBeep = shouldBeep(activity)
+    if (playBeep && mediaPlayer == null) {
+      // The volume on STREAM_SYSTEM is not adjustable, and users found it too loud,
+      // so we now play on the music stream.
+      activity.volumeControlStream = AudioManager.STREAM_MUSIC
+      mediaPlayer = buildMediaPlayer(activity)
+    }
   }
 }
+
+private val TAG = BeepManager::class.java.simpleName
+private const val BEEP_VOLUME = 0.10f
+private const val VIBRATE_DURATION = 200L

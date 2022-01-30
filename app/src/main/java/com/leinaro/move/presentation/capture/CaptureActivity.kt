@@ -16,18 +16,18 @@
 package com.leinaro.move.presentation.capture
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.os.Message
 import android.preference.PreferenceManager
 import android.provider.Browser
@@ -72,7 +72,7 @@ import java.util.EnumSet
  * @author Sean Owen
  */
 @AndroidEntryPoint
-class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback/*, CameraCaptureListener*/ {
+class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptureListener {
 
   val binding by viewBinding(ActivityCaptureBinding::inflate)
 
@@ -161,7 +161,6 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback/*, CameraCap
     inactivityTimer = InactivityTimer(this)
     beepManager = BeepManager(this)
     ambientLightManager = AmbientLightManager(this)
-
   }
 
   private fun setObserver() {
@@ -182,24 +181,17 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback/*, CameraCap
 
   override fun onResume() {
     super.onResume()
-
-    // historyManager must be initialized here to update the history preference
-    //historyManager = HistoryManager(this)
-    // historyManager?.trimHistory()
-
     // CameraManager must be initialized here, not in onCreate(). This is necessary because we don't
     // want to open the camera driver and measure the screen size if we're going to show the help on
     // first launch. That led to bugs where the scanning rectangle was the wrong size and partially
     // off screen.
-    cameraManager = CameraManager(application)
-    binding.viewfinderView.setCameraManager(cameraManager)
+    setUpCameraManager()
 
     handlerCamera = null
     lastResult = null
 
     resetStatusView()
 
-    beepManager?.updatePrefs()
     ambientLightManager?.start(cameraManager)
     inactivityTimer?.onResume()
 
@@ -225,9 +217,12 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback/*, CameraCap
     }
   }
 
-  override fun onPause() {
-    Log.e("iarl", "onPause")
+  private fun setUpCameraManager() {
+    cameraManager = CameraManager(application)
+    binding.viewfinderView.setCameraManager(cameraManager)
+  }
 
+  override fun onPause() {
     if (handlerCamera != null) {
       handlerCamera?.quitSynchronously()
       handlerCamera = null
@@ -349,7 +344,7 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback/*, CameraCap
    * @param scaleFactor amount by which thumbnail was scaled
    * @param barcode   A greyscale bitmap of the camera data which was decoded.
    */
-   fun handleDecode(rawResult: Result, bitmap: Bitmap?, scaleFactor: Float) {
+  fun handleDecode(rawResult: Result, bitmap: Bitmap?, scaleFactor: Float) {
     Log.e("iarl", "handleDecode")
 
     inactivityTimer?.onActivity()
@@ -367,51 +362,51 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback/*, CameraCap
     viewModel.handleDecodeInternally(rawResult, resultHandler, bitmap)
   }
 
- /* override fun returnScanResult(resultCode: Int, intent: Intent) {
-    Log.e("iarl", "returnscanresult")
+  /* override fun returnScanResult(resultCode: Int, intent: Intent) {
+     Log.e("iarl", "returnscanresult")
 
-    this.setResult(resultCode, intent)
-    this.finish()
-  }
+     this.setResult(resultCode, intent)
+     this.finish()
+   }
 
-  override fun launchProductQuery(url : String) {
-    Log.e("iarl", "launchproductquery")
+   override fun launchProductQuery(url : String) {
+     Log.e("iarl", "launchproductquery")
 
-    val intent = Intent(Intent.ACTION_VIEW)
-    intent.addFlags(Intents.FLAG_NEW_DOC)
-    intent.data = Uri.parse(url)
+     val intent = Intent(Intent.ACTION_VIEW)
+     intent.addFlags(Intents.FLAG_NEW_DOC)
+     intent.data = Uri.parse(url)
 
-    val resolveInfo = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+     val resolveInfo = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
 
-    var browserPackageName: String? = null
-    if (resolveInfo?.activityInfo != null) {
-      browserPackageName = resolveInfo.activityInfo.packageName
-    }
+     var browserPackageName: String? = null
+     if (resolveInfo?.activityInfo != null) {
+       browserPackageName = resolveInfo.activityInfo.packageName
+     }
 
-    // Needed for default Android browser / Chrome only apparently
-    if (browserPackageName != null) {
-      when (browserPackageName) {
-        "com.android.browser", "com.android.chrome" -> {
-          intent.setPackage(browserPackageName)
-          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-          intent.putExtra(Browser.EXTRA_APPLICATION_ID, browserPackageName)
-        }
-      }
-    }
+     // Needed for default Android browser / Chrome only apparently
+     if (browserPackageName != null) {
+       when (browserPackageName) {
+         "com.android.browser", "com.android.chrome" -> {
+           intent.setPackage(browserPackageName)
+           intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+           intent.putExtra(Browser.EXTRA_APPLICATION_ID, browserPackageName)
+         }
+       }
+     }
 
-    try {
-      this.startActivity(intent)
-    } catch (ignored: ActivityNotFoundException) {
-      Log.w(TAG, "Can't find anything to handle VIEW of URI")
-    }
-  }
+     try {
+       this.startActivity(intent)
+     } catch (ignored: ActivityNotFoundException) {
+       Log.w(TAG, "Can't find anything to handle VIEW of URI")
+     }
+   }
 
-  override fun restartPreviewAndDecode(handler: Handler?) {
-    Log.e("iarl", "restartPreviewAndDecode")
+   override fun restartPreviewAndDecode(handler: Handler?) {
+     Log.e("iarl", "restartPreviewAndDecode")
 
-    cameraManager?.requestPreviewFrame(handler, R.id.decode)
-    this.drawViewfinder()
-  }*/
+     cameraManager?.requestPreviewFrame(handler, R.id.decode)
+     this.drawViewfinder()
+   }*/
 
   /**
    * Superimpose a line for 1D or dots for 2D to highlight the key features of the barcode.
@@ -517,22 +512,15 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback/*, CameraCap
       cameraManager!!.openDriver(surfaceHolder)
       // Creating the handler starts the preview, which can also throw a RuntimeException.
       if (handlerCamera == null) {
-        Log.e("iarl", "init handler Camera ")
-
-       /* var decodeThread: DecodeThread = DecodeThread(
-          handlerCamera, cameraManager, EnumSet.of(BarcodeFormat.QR_CODE), decodeHints, characterSet,
-          ViewfinderResultPointCallback(binding.viewfinderView)
-        )*/
-
         handlerCamera =
           CameraCaptureHandler(
             this,
-//            this,
             EnumSet.of(BarcodeFormat.QR_CODE),
             decodeHints,
             characterSet,
-      //      decodeThread,
-            cameraManager!!
+            cameraManager!!,
+            ViewfinderResultPointCallback(binding.viewfinderView)
+
           )
       }
       decodeOrStoreSavedBitmap(null, null)
@@ -577,8 +565,58 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback/*, CameraCap
     lastResult = null
   }
 
- fun drawViewfinder() {
+  override fun drawViewfinder() {
     binding.viewfinderView.drawViewfinder()
+  }
+
+  override fun returnScanResult(intent: Intent) {
+    setResult(Activity.RESULT_OK, intent)
+    finish()
+  }
+
+  override fun decodeSucceeded(message: Message) {
+    var barcode: Bitmap? = null
+    var scaleFactor = 1.0f
+    val bundle = message.data
+    if (bundle != null) {
+      val compressedBitmap = bundle.getByteArray(DecodeThread.BARCODE_BITMAP)
+      if (compressedBitmap != null) {
+        barcode =
+          BitmapFactory.decodeByteArray(compressedBitmap, 0, compressedBitmap.size, null)
+        // Mutable copy:
+        barcode = barcode.copy(Bitmap.Config.ARGB_8888, true)
+      }
+      scaleFactor = bundle.getFloat(DecodeThread.BARCODE_SCALED_FACTOR)
+    }
+    handleDecode((message.obj as Result), barcode, scaleFactor)
+  }
+
+  override fun launchProductQuery(message: Message) {
+    val url = message.obj as String
+    val intent = Intent(Intent.ACTION_VIEW)
+    intent.addFlags(Intents.FLAG_NEW_DOC)
+    intent.data = Uri.parse(url)
+
+    val resolveInfo = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+    var browserPackageName: String? = null
+    if (resolveInfo != null && resolveInfo.activityInfo != null) {
+      browserPackageName = resolveInfo.activityInfo.packageName
+    }
+    // Needed for default Android browser / Chrome only apparently
+    if (browserPackageName != null) {
+      when (browserPackageName) {
+        "com.android.browser", "com.android.chrome" -> {
+          intent.setPackage(browserPackageName)
+          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+          intent.putExtra(Browser.EXTRA_APPLICATION_ID, browserPackageName)
+        }
+      }
+    }
+    try {
+      startActivity(intent)
+    } catch (ignored: ActivityNotFoundException) {
+      Log.w(TAG, "Can't find anything to handle VIEW of URI")
+    }
   }
 
   companion object {
