@@ -19,9 +19,9 @@
         android:id="@+id/navigate_to_capture_activity"
         app:destination="@id/capture_activity" />
 
-   <!-- <action
+    <action
         android:id="@+id/navigate_to_inventory_fragment"
-        app:destination="@id/inventoryFragment" />-->
+        app:destination="@id/inventoryFragment" />
 
     <!--
             <action
@@ -48,7 +48,7 @@
         app:destination="@id/box_details_activity" />
 
   </fragment>
-<!--
+
   <fragment
       android:id="@+id/inventoryFragment"
       android:name="com.leinaro.move.presentation.inventory.InventoryFragment"
@@ -56,7 +56,7 @@
       tools:layout="@layout/fragment_inventory">
 
 
-  </fragment>-->
+  </fragment>
 
   <activity
       android:id="@+id/box_details_activity"

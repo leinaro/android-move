@@ -65,8 +65,8 @@ internal class DecodeHandler(
    * @param height The height of the preview frame.
    */
   private fun decode(data: ByteArray, width: Int, height: Int) {
-    var rawResult: Result? = null
     val source = cameraManager?.buildLuminanceSource(data, width, height)
+    var rawResult: Result? = null
 
     if (source != null) {
       val bitmap = BinaryBitmap(HybridBinarizer(source))

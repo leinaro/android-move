@@ -20,7 +20,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import com.google.zxing.BarcodeFormat
-import com.google.zxing.DecodeHintType
 import com.leinaro.move.R
 import com.leinaro.move.presentation.capture.camera.CameraManager
 import java.util.EnumSet
@@ -38,14 +37,14 @@ interface CameraCaptureListener {
 class CameraCaptureHandler internal constructor(
   private val listener: CameraCaptureListener,
   decodeFormats: Collection<BarcodeFormat> = EnumSet.allOf(BarcodeFormat::class.java),
-  baseHints: Map<DecodeHintType, *>?,
-  characterSet: String?,
   private val cameraManager: CameraManager,
   viewfinderResultPointCallback: ViewfinderResultPointCallback,
 ) : Handler(Looper.getMainLooper()) {
 
   private val decodeThread: DecodeThread = DecodeThread(
-    cameraManager, this, decodeFormats, baseHints, characterSet,
+    cameraManager,
+    this,
+    decodeFormats,
     viewfinderResultPointCallback
   )
   private var state: State = State.SUCCESS

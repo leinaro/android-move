@@ -33,8 +33,6 @@ internal class DecodeThread(
   var cameraManager: CameraManager?,
   var handlerCamera: Handler?,
   var decodeFormats: Collection<BarcodeFormat>,
-  baseHints: Map<DecodeHintType, *>?,
-  characterSet: String?,
   resultPointCallback: ResultPointCallback?
 ) : Thread() {
 
@@ -44,13 +42,7 @@ internal class DecodeThread(
 
   init {
     hints = EnumMap(DecodeHintType::class.java)
-    if (baseHints != null) {
-      hints.putAll(baseHints)
-    }
     hints[DecodeHintType.POSSIBLE_FORMATS] = decodeFormats
-    if (characterSet != null) {
-      hints[DecodeHintType.CHARACTER_SET] = characterSet
-    }
     hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK] = resultPointCallback
   }
 

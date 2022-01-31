@@ -33,7 +33,7 @@ class MainFragment : Fragment() {
   private fun setListeners() {
     binding.button.setOnClickListener { navigateToCaptureActivity() }
     binding.button2.setOnClickListener { navigateToBoxListFragment() }
-   // binding.button3.setOnClickListener { navigateToInventoryFragment() }
+    binding.button3.setOnClickListener { navigateToInventoryFragment() }
   }
 
   private fun navigateToCaptureActivity() {
@@ -45,11 +45,11 @@ class MainFragment : Fragment() {
     val directions = MainFragmentDirections.navigateToBoxListFragment()
     NavHostFragment.findNavController(this).navigate(directions)
   }
-/*
+
   private fun navigateToInventoryFragment() {
     val directions = MainFragmentDirections.navigateToInventoryFragment()
     NavHostFragment.findNavController(this).navigate(directions)
-  }*/
+  }
 
   /* fun encodeAsBitmap(str: String?): Bitmap? {
      var result: BitMatrix

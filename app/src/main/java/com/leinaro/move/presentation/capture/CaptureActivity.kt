@@ -23,19 +23,14 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Paint
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Message
-import android.preference.PreferenceManager
 import android.provider.Browser
 import android.util.Log
-import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.SurfaceHolder
-import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -44,15 +39,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BarcodeFormat
-import com.google.zxing.DecodeHintType
 import com.google.zxing.Result
-import com.google.zxing.ResultMetadataType
-import com.google.zxing.ResultPoint
 import com.leinaro.move.BoxDetailsActivity
 import com.leinaro.move.R
 import com.leinaro.move.databinding.ActivityCaptureBinding
 import com.leinaro.move.presentation.capture.camera.CameraManager
-import com.leinaro.move.presentation.capture.result.ResultHandler
 import com.leinaro.move.presentation.capture.result.ResultHandlerFactory
 import com.leinaro.move.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,7 +51,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.text.DateFormat
 import java.util.EnumSet
 
 /**
@@ -74,22 +64,17 @@ import java.util.EnumSet
 @AndroidEntryPoint
 class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptureListener {
 
-  val binding by viewBinding(ActivityCaptureBinding::inflate)
+  private val binding by viewBinding(ActivityCaptureBinding::inflate)
 
   private val viewModel: CaptureViewModel by viewModels()
 
-  var cameraManager: CameraManager? = null
-  var handlerCamera: CameraCaptureHandler? = null
+  private var cameraManager: CameraManager? = null
+  private var handlerCamera: CameraCaptureHandler? = null
 
   private var savedResultToShow: Result? = null
   private var lastResult: Result? = null
 
   private var hasSurface = false
-
-  private var sourceUrl: String? = null
-  private var scanFromWebPageManager: ScanFromWebPageManager? = null
-  private var decodeHints: Map<DecodeHintType, *>? = null
-  private var characterSet: String? = null
 
   private var inactivityTimer: InactivityTimer? = null
   private var beepManager: BeepManager? = null
@@ -98,7 +83,6 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
   private val requestPermissionLauncher = registerForActivityResult(
     ActivityResultContracts.RequestPermission()
   ) { isGranted: Boolean ->
-    Log.e("iarl", "isGranted $isGranted")
     if (isGranted) {
       // Permission is granted. Continue the action or workflow in your
       // app.
@@ -128,7 +112,6 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
 
     initView()
 
-    PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
     setObserver()
   }
 
@@ -195,17 +178,6 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
     ambientLightManager?.start(cameraManager)
     inactivityTimer?.onResume()
 
-    val intent = intent
-
-    sourceUrl = null
-    scanFromWebPageManager = null
-    characterSet = null
-
-    if (intent != null) {
-      val action = intent.action
-      val dataString = intent.dataString
-      characterSet = intent.getStringExtra(Intents.Scan.CHARACTER_SET)
-    }
     val surfaceHolder = binding.previewView.holder
     if (hasSurface) {
       // The activity was paused but not stopped, so the surface still exists. Therefore
@@ -218,8 +190,8 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
   }
 
   private fun setUpCameraManager() {
-    cameraManager = CameraManager(application)
-    binding.viewfinderView.setCameraManager(cameraManager)
+    cameraManager = CameraManager(this)
+  //  binding.viewfinderView.setCameraManager(cameraManager)
   }
 
   override fun onPause() {
@@ -344,7 +316,7 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
    * @param scaleFactor amount by which thumbnail was scaled
    * @param barcode   A greyscale bitmap of the camera data which was decoded.
    */
-  fun handleDecode(rawResult: Result, bitmap: Bitmap?, scaleFactor: Float) {
+  private fun handleDecode(rawResult: Result, bitmap: Bitmap?, scaleFactor: Float) {
     Log.e("iarl", "handleDecode")
 
     inactivityTimer?.onActivity()
@@ -358,6 +330,7 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
       beepManager?.playBeepSoundAndVibrate()
       //drawResultPoints(bitmap, scaleFactor, rawResult)
     } */
+    beepManager?.playBeepSoundAndVibrate()
 
     viewModel.handleDecodeInternally(rawResult, resultHandler, bitmap)
   }
@@ -443,66 +416,7 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
     }
   }  */
 
-  private fun showQRInfo(rawResult: Result, resultHandler: ResultHandler) {
-    binding.statusView.visibility = View.GONE
-    binding.viewfinderView.visibility = View.GONE
-    binding.resultView.visibility = View.VISIBLE
-    /* if (barcode == null) {
-       binding.barcodeImageView.setImageBitmap(
-         BitmapFactory.decodeResource(
-           resources,
-           R.drawable.ic_launcher_foreground
-         )
-       )
-     } else {
-       binding.barcodeImageView.setImageBitmap(barcode)
-     }*/
-
-    binding.formatTextView.text = rawResult.barcodeFormat.toString()
-    binding.typeTextView.text = resultHandler.type.toString()
-    val formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
-    binding.timeTextView.text = formatter.format(rawResult.timestamp)
-    binding.metaTextView.visibility = View.GONE
-    binding.metaTextViewLabel.visibility = View.GONE
-
-    val metadata = rawResult.resultMetadata
-    if (metadata != null) {
-      val metadataText = StringBuilder(20)
-      for ((key, value) in metadata) {
-        if (DISPLAYABLE_METADATA_TYPES.contains(key)) {
-          metadataText.append(value).append('\n')
-        }
-      }
-      if (metadataText.length > 0) {
-        metadataText.setLength(metadataText.length - 1)
-        binding.metaTextView.text = metadataText
-        binding.metaTextView.visibility = View.VISIBLE
-        binding.metaTextViewLabel.visibility = View.VISIBLE
-      }
-    }
-
-    val displayContents = resultHandler.displayContents
-    binding.contentsTextView.text = displayContents
-    val scaledSize = Math.max(22, 32 - displayContents.length / 4)
-    binding.contentsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize.toFloat())
-    binding.contentsSupplementTextView.text = ""
-    binding.contentsSupplementTextView.setOnClickListener(null)
-    /*if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
-        PreferencesActivity.KEY_SUPPLEMENTAL, true
-      )
-    ) {
-      SupplementalInfoRetriever.maybeInvokeRetrieval(
-        binding.contentsSupplementTextView,
-        resultHandler.result,
-        historyManager,
-        this
-      )
-    } */
-  }
-
   private fun initCamera(surfaceHolder: SurfaceHolder?) {
-    Log.e("iarl", "initCamera ")
-
     checkNotNull(surfaceHolder) { "No SurfaceHolder provided" }
     if (cameraManager!!.isOpen) {
       Log.w(TAG, "initCamera() while already open -- late SurfaceView callback?")
@@ -516,11 +430,8 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
           CameraCaptureHandler(
             this,
             EnumSet.of(BarcodeFormat.QR_CODE),
-            decodeHints,
-            characterSet,
             cameraManager!!,
             ViewfinderResultPointCallback(binding.viewfinderView)
-
           )
       }
       decodeOrStoreSavedBitmap(null, null)
@@ -536,8 +447,6 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
   }
 
   private fun displayFrameworkBugMessageAndExit() {
-    Log.e("iarl", "displayFrameworkBugMessageAndExit")
-
     val builder = AlertDialog.Builder(this)
     builder.setTitle(getString(R.string.app_name))
     builder.setMessage(getString(R.string.msg_camera_framework_bug))
@@ -556,17 +465,14 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
   }
 
   private fun resetStatusView() {
-    Log.e("iarl", "resetStatusView")
-
-    binding.resultView.isVisible = false
     binding.statusView.setText(R.string.capture_code_message)
     binding.statusView.isVisible = true
-    binding.viewfinderView.isVisible = true
+    //binding.viewfinderView.isVisible = true
     lastResult = null
   }
 
   override fun drawViewfinder() {
-    binding.viewfinderView.drawViewfinder()
+    //binding.viewfinderView.drawViewfinder()
   }
 
   override fun returnScanResult(intent: Intent) {
@@ -593,6 +499,7 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
 
   override fun launchProductQuery(message: Message) {
     val url = message.obj as String
+
     val intent = Intent(Intent.ACTION_VIEW)
     intent.addFlags(Intents.FLAG_NEW_DOC)
     intent.data = Uri.parse(url)
@@ -619,33 +526,5 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
     }
   }
 
-  companion object {
     private val TAG = CaptureActivity::class.java.simpleName
-
-    //  private const val HISTORY_REQUEST_CODE = 0x0000bacc
-    private val DISPLAYABLE_METADATA_TYPES: Collection<ResultMetadataType> = EnumSet.of(
-      ResultMetadataType.ISSUE_NUMBER,
-      ResultMetadataType.SUGGESTED_PRICE,
-      ResultMetadataType.ERROR_CORRECTION_LEVEL,
-      ResultMetadataType.POSSIBLE_COUNTRY
-    )
-
-    private fun drawLine(
-      canvas: Canvas,
-      paint: Paint,
-      a: ResultPoint?,
-      b: ResultPoint?,
-      scaleFactor: Float
-    ) {
-      if (a != null && b != null) {
-        canvas.drawLine(
-          scaleFactor * a.x,
-          scaleFactor * a.y,
-          scaleFactor * b.x,
-          scaleFactor * b.y,
-          paint
-        )
-      }
-    }
-  }
 }

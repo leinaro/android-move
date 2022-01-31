@@ -37,7 +37,7 @@ internal class BeepManager(private val activity: Activity) : MediaPlayer.OnError
 
   @Synchronized fun playBeepSoundAndVibrate() {
     if (playBeep && mediaPlayer != null) {
-      mediaPlayer!!.start()
+      mediaPlayer?.start()
     }
     if (vibrate) {
       val vibrator = activity.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
