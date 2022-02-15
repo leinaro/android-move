@@ -19,8 +19,33 @@
     <item name="android:layout_height">wrap_content</item>
     <item name="android:layout_weight">1</item>
   </style>
+
   <style name="ShareButton" parent="@android:style/Widget.Holo.Button.Borderless.Small">
     <item name="android:layout_width">wrap_content</item>
     <item name="android:layout_height">wrap_content</item>
+  </style>
+
+  <style name="Theme.Move.Fullscreen" parent="Theme.Move">
+    <item name="android:actionBarStyle">@style/Widget.Theme.Move.ActionBar.Fullscreen</item>
+    <item name="android:windowActionBarOverlay">true</item>
+    <item name="android:windowBackground">@color/light_blue_600</item>
+    <item name="windowSplashScreenAnimationDuration">5000</item>
+    <item name="windowSplashScreenBackground">@color/light_blue_600</item>
+  </style>
+
+  <style name="ThemeOverlay.Move.FullscreenContainer" parent="">
+    <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
+    <item name="fullscreenTextColor">@color/light_blue_A200</item>
+
+  </style>
+
+  <style name="Theme.MySplash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <!--<item name="windowSplashScreenBackground">@color/light_blue_600</item>
+     <item name="windowSplashScreenAnimatedIcon">@drawable/splash_animation</item>
+    <item name="android:windowActionBarOverlay">true</item>
+    <item name="android:actionBarStyle">@style/Widget.Theme.Move.ActionBar.Fullscreen</item>
+    <item name="postSplashScreenTheme">@style/Theme.Move</item>
+    <item name="windowSplashScreenAnimationDuration">2000</item>-->
+    <item name="android:windowBackground">@color/light_blue_600</item>
   </style>
 </resources>

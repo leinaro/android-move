@@ -16,7 +16,7 @@ class Repository @Inject constructor(
   override fun getBoxByShortId(shortId: String): Flow<BoxContent?> {
     return flow {
       emit(
-        dataBase.db.boxDao().getBoxByUUID(shortId).toBoxContent()
+        dataBase.db.boxDao().getBoxByUUID(shortId).toBoxContent(false)
       )
     }
   }
@@ -44,11 +44,30 @@ class Repository @Inject constructor(
 
   override fun getAllBoxes(): Flow<List<BoxContent>> {
     return flow {
+      val status = dataBase.db.inventoryDao().getAllBoxStatus()
+      val boxes = dataBase.db.boxDao().allBoxes()
       emit(
-        dataBase.db.boxDao().allBoxes().mapNotNull {
-          it.toBoxContent()
+        dataBase.db.boxDao().allBoxes().mapNotNull { box ->
+          val s = status.firstOrNull { inventory ->
+            inventory.boxUUID == box.uuid
+          }?.status == "ARRIVED"
+          box.toBoxContent(s)
         }
       )
     }
+  }
+
+  override fun updateBoxStatus(uuid: String) {
+    //val status = if (boxContent.inventoried) "ARRIVED" else "IN_MOVE"
+    //dataBase.db.boxDao().getBoxByUUID(uuid)
+    dataBase.db.inventoryDao().updateBoxStatus(boxUUID = uuid, status = "ARRIVED")
+    //flow {
+    //dataBase.db.boxDao().insert(boxEntity)
+    /*emit(
+      dataBase.db.boxDao().allBoxes().mapNotNull {
+        it.toBoxContent()
+      }
+    )*/
+    //}
   }
 }

@@ -53,14 +53,6 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.EnumSet
 
-/**
- * This activity opens the camera and does the actual scanning on a background thread. It draws a
- * viewfinder to help the user place the barcode correctly, shows feedback as the image processing
- * is happening, and then overlays the results when a scan is successful.
- *
- * @author dswitkin@google.com (Daniel Switkin)
- * @author Sean Owen
- */
 @AndroidEntryPoint
 class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptureListener {
 
@@ -191,7 +183,6 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
 
   private fun setUpCameraManager() {
     cameraManager = CameraManager(this)
-  //  binding.viewfinderView.setCameraManager(cameraManager)
   }
 
   override fun onPause() {
@@ -431,7 +422,6 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
             this,
             EnumSet.of(BarcodeFormat.QR_CODE),
             cameraManager!!,
-            ViewfinderResultPointCallback(binding.viewfinderView)
           )
       }
       decodeOrStoreSavedBitmap(null, null)
@@ -465,9 +455,6 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
   }
 
   private fun resetStatusView() {
-    binding.statusView.setText(R.string.capture_code_message)
-    binding.statusView.isVisible = true
-    //binding.viewfinderView.isVisible = true
     lastResult = null
   }
 

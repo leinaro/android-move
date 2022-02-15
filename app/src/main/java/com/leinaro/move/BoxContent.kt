@@ -7,5 +7,6 @@ data class BoxContent(
   val counter: Int,
   val location: String,
   val description: String = "",
-  val photoPath: String = ""
+  val photoPath: String = "",
+  val inventoried: Boolean,
 ) : Serializable

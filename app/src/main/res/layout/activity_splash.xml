@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/ThemeOverlay.Move.FullscreenContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/fullscreenBackgroundColor"
+    tools:context=".SplashActivity">
+
+  <TextView
+      android:id="@+id/fullscreen_content"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:textColor="?attr/fullscreenTextColor"
+      android:keepScreenOn="true"
+      android:textStyle="bold"
+      android:textSize="100sp"
+      android:gravity="center"
+      android:fontFamily="@font/articulate"
+      android:text="@string/move" />
+
+  <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:id="@+id/fullscreen_content_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:padding="20dp"
+        tools:ignore="UselessParent">
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textColor="@color/white"
+          android:gravity="end"
+          android:text="v1.0.0" />
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textColor="@color/white"
+          android:gravity="end"
+          android:text="Dragon Fly" />
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textColor="@color/white"
+          android:gravity="end"
+          android:text="Leinaro Dev" />
+    </LinearLayout>
+  </FrameLayout>
+
+</FrameLayout>

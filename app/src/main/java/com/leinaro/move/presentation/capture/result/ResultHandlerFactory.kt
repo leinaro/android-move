@@ -29,7 +29,6 @@ object ResultHandlerFactory {
     } else TextResultHandler(
       activity,
       result,
-      rawResult
     )
   }
 

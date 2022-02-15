@@ -238,16 +238,6 @@ class CameraManager(private val context: Context) {
   }
 
   /**
-   * Allows third party apps to specify the camera ID, rather than determine
-   * it automatically based on available cameras and their orientation.
-   *
-   * @param cameraId camera ID of the camera to use. A negative value means "no preference".
-   */
-  @Synchronized fun setManualCameraId(cameraId: Int) {
-    requestedCameraId = cameraId
-  }
-
-  /**
    * Allows third party apps to specify the scanning rectangle dimensions, rather than determine
    * them automatically based on screen resolution.
    *
@@ -259,7 +249,7 @@ class CameraManager(private val context: Context) {
     var height = height
     if (initialized) {
       val screenResolution = configManager.screenResolution
-      if (width > screenResolution.x) {
+      if (width > screenResolution!!.x) {
         width = screenResolution.x
       }
       if (height > screenResolution.y) {

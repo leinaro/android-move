@@ -15,13 +15,14 @@ data class BoxEntity(
   @PrimaryKey(autoGenerate = true) var id: Int? = null
 }
 
-fun BoxEntity?.toBoxContent(): BoxContent? {
+fun BoxEntity?.toBoxContent(inventoried: Boolean): BoxContent? {
   return if (this == null) null
   else BoxContent(
     uuid = this.uuid.orEmpty(),
     counter = this.counter ?: 0,
     location = this.location.orEmpty(),
-    description = this.description.orEmpty()
+    description = this.description.orEmpty(),
+    inventoried = inventoried
   )
 }
 

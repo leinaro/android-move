@@ -9,14 +9,17 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.leinaro.move.datasource.local.dao.BoxDao
 import com.leinaro.move.datasource.local.dao.ImageDao
+import com.leinaro.move.datasource.local.dao.InventoryDao
 import com.leinaro.move.datasource.local.model.BoxEntity
 import com.leinaro.move.datasource.local.model.ImageEntity
+import com.leinaro.move.datasource.local.model.InventoryEntity
 import java.io.ByteArrayOutputStream
 
 @Database(
   entities = [
     BoxEntity::class,
     ImageEntity::class,
+    InventoryEntity::class
   ],
   version = 1, exportSchema = false
 )
@@ -27,6 +30,7 @@ import java.io.ByteArrayOutputStream
 abstract class MoveDataBase : RoomDatabase() {
   abstract fun boxDao(): BoxDao
   abstract fun imageDao(): ImageDao
+  abstract fun inventoryDao(): InventoryDao
 }
 
 class ImageBitmapString {

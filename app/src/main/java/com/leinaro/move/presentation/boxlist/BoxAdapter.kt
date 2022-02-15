@@ -4,14 +4,25 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.leinaro.move.BoxContent
+import com.leinaro.move.R
 import com.leinaro.move.databinding.FragmentBoxListItemBinding
 
-class BoxAdapter(private val dataSet: Array<BoxContent>, private val listener: Listener? = null) :
-  RecyclerView.Adapter<BoxAdapter.ViewHolder>() {
+class BoxAdapter(
+  private val dataSet: Array<BoxContent>,
+  private val listener: Listener? = null
+) : RecyclerView.Adapter<BoxAdapter.ViewHolder>() {
 
   interface Listener {
     fun onItemClickListener(boxContent: BoxContent?)
   }
+
+  /* private val inventory: MutableMap<String, BoxContent> = mutableMapOf()
+
+   init {
+     dataSet.map {
+       inventory[it.uuid] = it
+     }
+   }*/
 
   class ViewHolder(
     val binding: FragmentBoxListItemBinding,
@@ -31,6 +42,11 @@ class BoxAdapter(private val dataSet: Array<BoxContent>, private val listener: L
       this.boxContent = boxContent
       binding.itemNumber.text = boxContent.uuid.take(8)
       binding.content.text = "${boxContent.location} : ${boxContent.description}"
+      if (boxContent.inventoried){
+        binding.root.setBackgroundResource(R.color.result_points)
+      } else {
+        binding.root.setBackgroundResource(R.color.white)
+      }
     }
   }
 
@@ -47,4 +63,7 @@ class BoxAdapter(private val dataSet: Array<BoxContent>, private val listener: L
 
   override fun getItemCount() = dataSet.size
 
+  fun registerOnInventory(uuid: String) {
+    dataSet.find { it.uuid == uuid }
+  }
 }

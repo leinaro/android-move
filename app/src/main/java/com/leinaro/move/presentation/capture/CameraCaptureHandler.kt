@@ -38,14 +38,12 @@ class CameraCaptureHandler internal constructor(
   private val listener: CameraCaptureListener,
   decodeFormats: Collection<BarcodeFormat> = EnumSet.allOf(BarcodeFormat::class.java),
   private val cameraManager: CameraManager,
-  viewfinderResultPointCallback: ViewfinderResultPointCallback,
 ) : Handler(Looper.getMainLooper()) {
 
   private val decodeThread: DecodeThread = DecodeThread(
     cameraManager,
     this,
     decodeFormats,
-    viewfinderResultPointCallback
   )
   private var state: State = State.SUCCESS
 
@@ -80,6 +78,10 @@ class CameraCaptureHandler internal constructor(
       }
       R.id.launch_product_query -> {
         listener.launchProductQuery(message)
+      }
+      R.id.quit -> {
+        //this.looper.quitSafely()
+        quitSynchronously()
       }
     }
   }

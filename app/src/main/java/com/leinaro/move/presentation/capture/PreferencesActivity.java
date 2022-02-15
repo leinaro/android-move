@@ -27,26 +27,22 @@ import android.os.Bundle;
  */
 public final class PreferencesActivity extends Activity {
 
-
   public static final String KEY_CUSTOM_PRODUCT_SEARCH = "preferences_custom_product_search";
 
-  public static final String KEY_PLAY_BEEP = "preferences_play_beep";
-  public static final String KEY_VIBRATE = "preferences_vibrate";
   public static final String KEY_FRONT_LIGHT_MODE = "preferences_front_light_mode";
   public static final String KEY_REMEMBER_DUPLICATES = "preferences_remember_duplicates";
   public static final String KEY_ENABLE_HISTORY = "preferences_history";
   public static final String KEY_AUTO_FOCUS = "preferences_auto_focus";
-  public static final String KEY_INVERT_SCAN = "preferences_invert_scan";  
-  public static final String KEY_SEARCH_COUNTRY = "preferences_search_country";
 
-  public static final String KEY_DISABLE_CONTINUOUS_FOCUS = "preferences_disable_continuous_focus";
-  public static final String KEY_DISABLE_EXPOSURE = "preferences_disable_exposure";
   public static final String KEY_DISABLE_METERING = "preferences_disable_metering";
-  public static final String KEY_DISABLE_BARCODE_SCENE_MODE = "preferences_disable_barcode_scene_mode";
+  public static final String KEY_DISABLE_BARCODE_SCENE_MODE =
+      "preferences_disable_barcode_scene_mode";
 
   @Override
   protected void onCreate(Bundle icicle) {
     super.onCreate(icicle);
-    getFragmentManager().beginTransaction().replace(android.R.id.content, new PreferencesFragment()).commit();
+    getFragmentManager().beginTransaction()
+        .replace(android.R.id.content, new PreferencesFragment())
+        .commit();
   }
 }

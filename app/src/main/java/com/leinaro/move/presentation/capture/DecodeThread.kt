@@ -19,7 +19,6 @@ import android.os.Handler
 import android.os.Looper
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.DecodeHintType
-import com.google.zxing.ResultPointCallback
 import com.leinaro.move.presentation.capture.camera.CameraManager
 import java.util.EnumMap
 import java.util.concurrent.CountDownLatch
@@ -33,8 +32,7 @@ internal class DecodeThread(
   var cameraManager: CameraManager?,
   var handlerCamera: Handler?,
   var decodeFormats: Collection<BarcodeFormat>,
-  resultPointCallback: ResultPointCallback?
-) : Thread() {
+) : Thread("HandlerThread") {
 
   private val hints: MutableMap<DecodeHintType, Any?>
   private var handler: Handler? = null
@@ -43,7 +41,6 @@ internal class DecodeThread(
   init {
     hints = EnumMap(DecodeHintType::class.java)
     hints[DecodeHintType.POSSIBLE_FORMATS] = decodeFormats
-    hints[DecodeHintType.NEED_RESULT_POINT_CALLBACK] = resultPointCallback
   }
 
   fun getHandler(): Handler? {

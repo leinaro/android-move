@@ -13,27 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.leinaro.move.presentation.capture.result
 
-package com.leinaro.move.presentation.capture.result;
-
-import android.app.Activity;
-import com.google.zxing.Result;
-import com.google.zxing.client.result.ParsedResult;
-import com.leinaro.move.R;
+import android.app.Activity
+import com.google.zxing.client.result.ParsedResult
+import com.leinaro.move.R
 
 /**
  * This class handles TextParsedResult as well as unknown formats. It's the fallback handler.
  *
  * @author dswitkin@google.com (Daniel Switkin)
  */
-public final class TextResultHandler extends ResultHandler {
-
-  public TextResultHandler(Activity activity, ParsedResult result, Result rawResult) {
-    super(activity, result, rawResult);
-  }
-
-  @Override
-  public int getDisplayTitle() {
-    return R.string.result_text;
-  }
+class TextResultHandler(activity: Activity?, result: ParsedResult?) : ResultHandler(
+  activity!!, result!!
+) {
+  override val displayTitle: Int
+    get() = R.string.result_text
 }

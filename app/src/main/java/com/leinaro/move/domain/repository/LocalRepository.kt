@@ -10,6 +10,7 @@ interface LocalRepository {
   fun getAllBoxes(): Flow<List<BoxContent>>
 
   fun saveImages(uuid: String, bitmapList: List<Bitmap>)
+  fun updateBoxStatus(uuid: String)
 }
 
 

@@ -8,6 +8,8 @@ import com.leinaro.move.domain.usecase.getboxlist.GetBoxListDomainInteractor
 import com.leinaro.move.domain.usecase.getboxlist.GetBoxListInteractor
 import com.leinaro.move.domain.usecase.saveimages.SaveImagesDomainInteractor
 import com.leinaro.move.domain.usecase.saveimages.SaveImagesInteractor
+import com.leinaro.move.domain.usecase.updateboxstatus.UpdateBoxStatusDomainInteractor
+import com.leinaro.move.domain.usecase.updateboxstatus.UpdateBoxStatusInteractor
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -35,4 +37,9 @@ abstract class UseCaseModule {
   abstract fun bindGetBoxListInteractor(
     getBoxListInteractor: GetBoxListDomainInteractor
   ): GetBoxListInteractor
+
+  @Binds
+  abstract fun bindUpdateBoxStatusInteractor(
+    updateBoxStatusDomainInteractor: UpdateBoxStatusDomainInteractor
+  ): UpdateBoxStatusInteractor
 }

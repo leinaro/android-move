@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.leinaro.move.datasource.DataBaseClient
 import com.leinaro.move.datasource.local.dao.BoxDao
+import com.leinaro.move.datasource.local.dao.InventoryDao
 import com.leinaro.move.datasource.local.model.BoxEntity
+import com.leinaro.move.datasource.local.model.InventoryEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -155,6 +157,11 @@ class MainViewModel @Inject constructor(
         it.value.toBoxEntity()
       }*/
       val boxDao: BoxDao = dataBase.db.boxDao()
+      val inventoryDao: InventoryDao = dataBase.db.inventoryDao()
+
+      boxEntityList.map {
+        inventoryDao.insert(InventoryEntity(it.uuid.orEmpty(), "IN_MOVE"))
+      }
       boxDao.insert(*boxEntityList.toTypedArray())
     }
   }

@@ -18,7 +18,6 @@ package com.leinaro.move.presentation.capture
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.os.Message
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.DecodeHintType
@@ -35,7 +34,7 @@ internal class DecodeHandler(
   private var cameraManager: CameraManager?,
   private var handlerCamera: Handler?,
   hints: Map<DecodeHintType, Any?>?
-) : Handler() {
+) : Handler(handlerCamera!!.getLooper()) {
   private val multiFormatReader: MultiFormatReader = MultiFormatReader()
   private var running = true
 
@@ -51,7 +50,10 @@ internal class DecodeHandler(
       R.id.decode -> decode(message.obj as ByteArray, message.arg1, message.arg2)
       R.id.quit -> {
         running = false
-        Looper.myLooper()?.quit()
+        //Looper.myLooper()?.quit()
+        //    this.looper.quitSafely()
+        val message2: Message = Message.obtain(handlerCamera, R.id.quit)
+        message2.sendToTarget()
       }
     }
   }

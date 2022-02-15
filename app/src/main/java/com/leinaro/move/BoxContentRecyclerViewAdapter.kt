@@ -7,10 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.leinaro.move.databinding.FragmentBoxListItemBinding
 import com.leinaro.move.placeholder.PlaceholderContent.PlaceholderItem
 
-/**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
- */
 class BoxContentRecyclerViewAdapter(
   private val values: List<PlaceholderItem>
 ) : RecyclerView.Adapter<BoxContentRecyclerViewAdapter.ViewHolder>() {

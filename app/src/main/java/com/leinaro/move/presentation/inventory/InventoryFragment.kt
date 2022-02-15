@@ -12,26 +12,44 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.zxing.BarcodeFormat
+import com.google.zxing.Result
 import com.leinaro.move.R
 import com.leinaro.move.databinding.FragmentInventoryBinding
+import com.leinaro.move.presentation.boxlist.BoxAdapter
+import com.leinaro.move.presentation.capture.AmbientLightManager
+import com.leinaro.move.presentation.capture.BeepManager
 import com.leinaro.move.presentation.capture.CameraCaptureHandler
 import com.leinaro.move.presentation.capture.CameraCaptureListener
-import com.leinaro.move.presentation.capture.ViewfinderResultPointCallback
+import com.leinaro.move.presentation.capture.InactivityTimer
 import com.leinaro.move.presentation.capture.camera.CameraManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.EnumSet
 
 @AndroidEntryPoint
 class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListener {
+
   private var _binding: FragmentInventoryBinding? = null
   private val binding get() = _binding!!
 
+  private val viewModel: InventoryViewModel by viewModels()
+
   private var cameraManager: CameraManager? = null
-  private var hasSurface = false
-  private val TAG = InventoryFragment::class.java.simpleName
   private var handlerCamera: CameraCaptureHandler? = null
+
+  private var hasSurface = false
+  private var inactivityTimer: InactivityTimer? = null
+  private var beepManager: BeepManager? = null
+  private var ambientLightManager: AmbientLightManager? = null
+
+  private val TAG = InventoryFragment::class.java.simpleName
 
   override fun onAttach(context: Context) {
     super.onAttach(context)
@@ -51,6 +69,22 @@ class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListe
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     initView()
+    collectData()
+    viewModel.onViewCreated()
+  }
+
+  private fun collectData() {
+    this.lifecycleScope.launch {
+      viewModel.viewData.filterNotNull()
+        .collect { inventoryViewData ->
+          with(binding.boxList) {
+            this.adapter = BoxAdapter(
+              inventoryViewData.boxList.toTypedArray(),
+              //this@BoxListFragment
+            )
+          }
+        }
+    }
   }
 
   override fun onResume() {
@@ -62,18 +96,17 @@ class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListe
     setUpCameraManager()
 
     handlerCamera = null
-    //lastResult = null
 
     resetStatusView()
 
-    //ambientLightManager?.start(cameraManager)
-    //inactivityTimer?.onResume()
+    ambientLightManager?.start(cameraManager)
+    inactivityTimer?.onResume()
 
     val surfaceHolder = binding.previewView.holder
     if (hasSurface) {
       // The activity was paused but not stopped, so the surface still exists. Therefore
       // surfaceCreated() won't be called, so init the camera here.
-    //  initCamera(surfaceHolder)
+      //  initCamera(surfaceHolder)
     } else {
       // Install the callback and wait for surfaceCreated() to init the camera.
       surfaceHolder.addCallback(this)
@@ -107,7 +140,19 @@ class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListe
   }
 
   override fun decodeSucceeded(message: Message) {
-    //TODO("Not yet implemented")
+    val bundle = message.data
+    handleDecode((message.obj as Result))
+  }
+
+  private fun handleDecode(rawResult: Result) {
+    inactivityTimer?.onActivity()
+
+    beepManager?.playBeepSoundAndVibrate()
+
+    viewModel.handleDecodeInternally(rawResult)
+    handlerCamera?.sendEmptyMessageDelayed(R.id.restart_preview, 1000L)
+
+    //updateAdapter()
   }
 
   override fun launchProductQuery(message: Message) {
@@ -117,21 +162,29 @@ class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListe
 
   // region private methods
   private fun initView() {
-    //hasSurface = false
-    //inactivityTimer = InactivityTimer(this)
-    //beepManager = BeepManager(this)
-    //ambientLightManager = AmbientLightManager(this)
+    hasSurface = false
+    inactivityTimer = InactivityTimer(this.requireActivity())
+    beepManager = BeepManager(this.requireActivity())
+    ambientLightManager = AmbientLightManager(this.requireContext())
+
+    with(binding.boxList) {
+      layoutManager = LinearLayoutManager(context)
+      //  adapter = BoxContentRecyclerViewAdapter(PlaceholderContent.ITEMS)
+      adapter = BoxAdapter(
+        emptyArray(),
+        // it.boxList.toTypedArray(),
+        //this@BoxListFragment
+      )
+    }
   }
 
   private fun setUpCameraManager() {
     cameraManager = CameraManager(this.requireContext())
-    binding.viewfinderView.setCameraManager(cameraManager)
   }
 
   private fun resetStatusView() {
     binding.statusView.setText(R.string.capture_code_message)
     binding.statusView.isVisible = true
-    binding.viewfinderView.isVisible = true
     // lastResult = null
   }
 
@@ -150,7 +203,6 @@ class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListe
             this,
             EnumSet.of(BarcodeFormat.QR_CODE),
             cameraManager!!,
-            ViewfinderResultPointCallback(binding.viewfinderView)
           )
       }
       //decodeOrStoreSavedBitmap(null, null)
