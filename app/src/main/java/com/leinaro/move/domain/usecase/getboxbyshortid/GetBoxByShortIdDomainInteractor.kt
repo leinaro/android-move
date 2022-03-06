@@ -1,6 +1,6 @@
 package com.leinaro.move.domain.usecase.getboxbyshortid
 
-import com.leinaro.move.BoxContent
+import com.leinaro.move.presentation.data.BoxContent
 import com.leinaro.move.domain.repository.LocalRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

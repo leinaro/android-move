@@ -2,40 +2,8 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_nav_graph.xml"
-    app:startDestination="@id/mainFragment">
-
-  <fragment
-      android:id="@+id/mainFragment"
-      android:name="com.leinaro.move.presentation.MainFragment"
-      android:label="MainFragment"
-      tools:layout="@layout/fragment_main">
-
-    <action
-        android:id="@+id/navigate_to_box_list_fragment"
-        app:destination="@id/boxListFragment" />
-
-    <action
-        android:id="@+id/navigate_to_capture_activity"
-        app:destination="@id/capture_activity" />
-
-    <action
-        android:id="@+id/navigate_to_inventory_fragment"
-        app:destination="@id/inventoryFragment" />
-
-    <!--
-            <action
-                android:id="@+id/navigate_to_add_element_to_pay_activity"
-                app:destination="@id/add_element_to_pay_activity" />
-
-            <action
-                android:id="@+id/navigate_to_complete_payment_activity"
-                app:destination="@id/complete_payment_activity" />
-
-            <action
-                android:id="@+id/navigate_to_empty_fragment"
-                app:destination="@id/emptyFragment" />-->
-  </fragment>
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/boxListFragment">
 
   <fragment
       android:id="@+id/boxListFragment"
@@ -47,6 +15,14 @@
         android:id="@+id/navigate_to_box_details_activity"
         app:destination="@id/box_details_activity" />
 
+    <action
+        android:id="@+id/navigate_to_inventory_fragment"
+        app:destination="@id/inventoryFragment" />
+
+    <action
+        android:id="@+id/navigate_to_capture_activity"
+        app:destination="@id/capture_activity" />
+
   </fragment>
 
   <fragment
@@ -55,18 +31,17 @@
       android:label="InventoryFragment"
       tools:layout="@layout/fragment_inventory">
 
-
   </fragment>
 
   <activity
       android:id="@+id/box_details_activity"
-      android:name="com.leinaro.move.BoxDetailsActivity"
+      android:name="com.leinaro.move.presentation.boxdetails.BoxDetailsActivity"
       android:label="Add Element To Pay"
       tools:layout="@layout/activity_box_details">
 
     <argument
         android:name="boxContent"
-        app:argType="com.leinaro.move.BoxContent"
+        app:argType="com.leinaro.move.presentation.data.BoxContent"
         app:nullable="true" />
 
   </activity>

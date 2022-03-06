@@ -8,6 +8,7 @@ plugins {
   id 'androidx.navigation.safeargs'
   // Crashlytics
   id 'com.google.gms.google-services'
+  id 'com.google.firebase.crashlytics'
 }
 hilt {
   enableExperimentalClasspathAggregation = true
@@ -26,16 +27,26 @@ android {
     applicationId "com.leinaro.move"
     minSdk 23
     targetSdk 31
-    versionCode 1
-    versionName "1.0"
+    versionCode 9
+    versionName "v1.0.9"
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
   buildTypes {
     release {
-      minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+      resValue "string", "app_name", "@string/app_name_release"
+      minifyEnabled true
+      debuggable false
+      //signingConfig signingConfigs.release
+    }
+    debug {
+      resValue "string", "app_name", "@string/app_name_debug"
+      applicationIdSuffix '.debug'
+      versionNameSuffix '.debug'
+      debuggable true
+      minifyEnabled false
     }
   }
   compileOptions {
@@ -52,13 +63,13 @@ android {
 
 dependencies {
   // register for result
-  implementation "androidx.activity:activity:1.4.0"
-  implementation "androidx.fragment:fragment:1.4.0"
-  implementation "androidx.core:core-splashscreen:1.0.0-beta01"
-
+  implementation "androidx.activity:activity-ktx:1.4.0"
+  implementation "androidx.fragment:fragment-ktx:1.4.1"
+  //implementation "androidx.core:core-splashscreen:1.0.0-beta01"
 
   // Firebase
   implementation platform('com.google.firebase:firebase-bom:29.0.3')
+  implementation 'com.google.firebase:firebase-crashlytics-ktx'
   implementation 'com.google.firebase:firebase-analytics-ktx'
 
   // region HILT
@@ -68,7 +79,7 @@ dependencies {
   // endregion
 
   // region Navigation Component
-  def nav_version = "2.3.5"
+  def nav_version = "2.4.1"
 
   // Kotlin
   implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
@@ -76,7 +87,7 @@ dependencies {
   // endregion
 
   // region Room
-  def room_version = "2.3.0"
+  def room_version = "2.4.2"
 
   implementation("androidx.room:room-runtime:$room_version")
   kapt("androidx.room:room-compiler:$room_version")
@@ -92,11 +103,12 @@ dependencies {
   // endregion
 
   // region Modules
-  //  implementation project(path: ':validatable-fields')
+  implementation project(path: ':validatable-fields')
+  implementation project(path: ':permissions')
   // endregion
 
   // region Work Manager
-  def work_version = "2.7.0"
+  def work_version = "2.7.1"
   implementation("androidx.work:work-runtime-ktx:$work_version")
   // endregion
 
@@ -108,13 +120,13 @@ dependencies {
   api 'com.google.zxing:core:3.3.3'
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation 'androidx.core:core-ktx:1.6.0'
-  implementation 'androidx.appcompat:appcompat:1.3.1'
-  implementation 'com.google.android.material:material:1.4.0'
-  implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+  implementation 'androidx.core:core-ktx:1.7.0'
+  implementation 'androidx.appcompat:appcompat:1.4.1'
+  implementation 'com.google.android.material:material:1.5.0'
+  implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
   implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-  implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
-  implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+  implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
+  implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
   testImplementation 'junit:junit:4.13.2'
   androidTestImplementation 'androidx.test.ext:junit:1.1.3'
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'

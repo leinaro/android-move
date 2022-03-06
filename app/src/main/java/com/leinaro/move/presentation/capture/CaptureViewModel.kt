@@ -26,11 +26,7 @@ class CaptureViewModel @Inject constructor(
   fun handleDecodeInternally(
     rawResult: Result,
     resultHandler: ResultHandler,
-    barcode: Bitmap?
   ) {
-    Log.e("iarl", "handleDecodeInternally $rawResult")
-    Log.e("iarl", "handleDecodeInternally $resultHandler")
-
     if (resultHandler is URIResultHandler) {
       val uri = Uri.parse(rawResult.text)
       if (uri.host == host && uri.scheme == scheme) {

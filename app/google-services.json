@@ -41,6 +41,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127766882631:android:df0ec87acfa4613ad24462",
+        "android_client_info": {
+          "package_name": "com.leinaro.move.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "127766882631-f900ogqniq4lge1d2d13jrcfkoi6eu31.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMvXReDOM_y_btgffQKe-qk9_w2oJPWeM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "127766882631-f900ogqniq4lge1d2d13jrcfkoi6eu31.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

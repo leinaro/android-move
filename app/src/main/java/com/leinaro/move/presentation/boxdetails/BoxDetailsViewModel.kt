@@ -1,13 +1,18 @@
-package com.leinaro.move
+package com.leinaro.move.presentation.boxdetails
 
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.leinaro.move.presentation.data.BoxContent
+import com.leinaro.move.R
 import com.leinaro.move.domain.usecase.geimagesbyboxid.GetImagesByBoxIdInteractor
 import com.leinaro.move.domain.usecase.getboxbyshortid.GetBoxByShortIdInteractor
-import com.leinaro.move.domain.usecase.saveimages.SaveImagesInteractor
+import com.leinaro.move.domain.usecase.saveimages.SaveBoxInteractor
+import com.leinaro.validatable_fields.DefaultValidatableField
+import com.leinaro.validatable_fields.ValidationRule
+import com.leinaro.validatable_fields.validators.NotEmptyValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,9 +22,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BoxDetailsViewModel @Inject constructor(
+  private val notEmptyValidator: NotEmptyValidator,
   private val getBoxByShortIdInteractor: GetBoxByShortIdInteractor,
   private val getImagesByBoxIdInteractor: GetImagesByBoxIdInteractor,
-  private val saveImagesInteractor: SaveImagesInteractor,
+  private val saveBoxInteractor: SaveBoxInteractor,
   private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -27,8 +33,21 @@ class BoxDetailsViewModel @Inject constructor(
 
   private val temporalBitmapList = mutableListOf<Bitmap>()
 
-  fun onCreate(boxContent: BoxContent?) {
+  val locationValidator = DefaultValidatableField(
+    ValidationRule(
+      validator = notEmptyValidator,
+      errorMessage = R.string.required_field_error,
+    )
+  )
 
+  val descriptionValidator = DefaultValidatableField(
+    ValidationRule(
+      validator = notEmptyValidator,
+      errorMessage = R.string.required_field_error,
+    )
+  )
+
+  fun onCreate(boxContent: BoxContent?) {
     if (boxContent != null) {
       viewData.value = BoxDetailsViewData(
         boxContent = boxContent,
@@ -51,29 +70,55 @@ class BoxDetailsViewModel @Inject constructor(
                 temporalBitmapList = emptyList()
               )
               getImages(boxContent.uuid)
+            } ?: run {
+              val tempBoxContent = BoxContent(
+                uuid = shortId,
+                isNew = true,
+              )
+              viewData.value = BoxDetailsViewData(
+                boxContent = tempBoxContent,
+                bitmapList = emptyList(),
+                temporalBitmapList = emptyList(),
+              )
             }
           }
       }
     }
   }
 
-  private fun getImages(uuid: String) {
-    viewModelScope.launch(Dispatchers.IO) {
-      getImagesByBoxIdInteractor.execute(uuid)
-    }
+  private fun validateForm(): Boolean {
+    return listOf(
+      locationValidator.validate(),
+      descriptionValidator.validate(),
+    ).contains(false)
   }
 
   fun save() {
-    saveImagesInteractor.execute(
-      viewData.value?.boxContent?.uuid.orEmpty(),
-      viewData.value?.temporalBitmapList.orEmpty()
+    if (validateForm()) return
+    val boxContent = viewData.value?.boxContent?.copy(
+      location = locationValidator.data.value.orEmpty(),
+      description = descriptionValidator.data.value.orEmpty(),
     )
-    temporalBitmapList.clear()
+    boxContent?.let {
+      viewModelScope.launch(Dispatchers.IO) {
+        saveBoxInteractor.execute(
+          boxContent,
+          viewData.value?.temporalBitmapList.orEmpty()
+        )
+        temporalBitmapList.clear()
+      }
+    }
   }
 
   fun addImages(bitmapList: List<Bitmap>) {
     temporalBitmapList.addAll(bitmapList)
     viewData.value = viewData.value?.copy(temporalBitmapList = temporalBitmapList)
+  }
+
+  private fun getImages(uuid: String) {
+    viewModelScope.launch(Dispatchers.IO) {
+      getImagesByBoxIdInteractor.execute(uuid)
+    }
   }
 }
 

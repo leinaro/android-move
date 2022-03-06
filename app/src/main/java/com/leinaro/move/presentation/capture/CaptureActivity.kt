@@ -15,7 +15,6 @@
  */
 package com.leinaro.move.presentation.capture
 
-import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
@@ -24,7 +23,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Message
 import android.provider.Browser
@@ -32,20 +30,17 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.SurfaceHolder
 import android.view.WindowManager
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.Result
-import com.leinaro.move.BoxDetailsActivity
+import com.leinaro.move.presentation.boxdetails.BoxDetailsActivity
 import com.leinaro.move.R
 import com.leinaro.move.databinding.ActivityCaptureBinding
+import com.leinaro.move.databinding.ActivityMainBinding
 import com.leinaro.move.presentation.capture.camera.CameraManager
 import com.leinaro.move.presentation.capture.result.ResultHandlerFactory
-import com.leinaro.move.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
@@ -56,7 +51,9 @@ import java.util.EnumSet
 @AndroidEntryPoint
 class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptureListener {
 
-  private val binding by viewBinding(ActivityCaptureBinding::inflate)
+  private lateinit var binding: ActivityCaptureBinding
+
+//  private val binding by viewBinding(ActivityCaptureBinding::inflate)
 
   private val viewModel: CaptureViewModel by viewModels()
 
@@ -72,63 +69,19 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
   private var beepManager: BeepManager? = null
   private var ambientLightManager: AmbientLightManager? = null
 
-  private val requestPermissionLauncher = registerForActivityResult(
-    ActivityResultContracts.RequestPermission()
-  ) { isGranted: Boolean ->
-    if (isGranted) {
-      // Permission is granted. Continue the action or workflow in your
-      // app.
-    } else {
-      // TODO:
-      //finish()
-      // Explain to the user that the feature is unavailable because the
-      // features requires a permission that the user has denied. At the
-      // same time, respect the user's decision. Don't link to system
-      // settings in an effort to convince the user to change their
-      // decision.
-    }
-  }
-
   public override fun onCreate(icicle: Bundle?) {
     super.onCreate(icicle)
 
     val window = window
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-    setContentView(binding.root)
-
-    if (!haveCameraPermission()) {
-      requestCameraPermission()
-      return
-    }
+    binding = ActivityCaptureBinding.inflate(layoutInflater)
+    val view = binding.root
+    setContentView(view)
+    //setContentView(binding.root)
 
     initView()
 
     setObserver()
-  }
-
-  private fun haveCameraPermission(): Boolean {
-    return ContextCompat.checkSelfPermission(
-      this,
-      Manifest.permission.CAMERA
-    ) == PackageManager.PERMISSION_GRANTED
-  }
-
-  private fun requestCameraPermission() {
-    when {
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && shouldShowRequestPermissionRationale(
-        Manifest.permission.CAMERA
-      ) -> {
-        // In an educational UI, explain to the user why your app requires this
-        // permission for a specific feature to behave as expected. In this UI,
-        // include a "cancel" or "no thanks" button that allows the user to
-        // continue using your app without granting the permission.
-        // TODO: showInContextUI(...)
-      }
-      else -> {
-        requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-      }
-    }
   }
 
   private fun initView() {
@@ -323,7 +276,7 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
     } */
     beepManager?.playBeepSoundAndVibrate()
 
-    viewModel.handleDecodeInternally(rawResult, resultHandler, bitmap)
+    viewModel.handleDecodeInternally(rawResult, resultHandler)
   }
 
   /* override fun returnScanResult(resultCode: Int, intent: Intent) {

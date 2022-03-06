@@ -14,7 +14,9 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.Result
 import com.leinaro.move.R
@@ -34,7 +36,8 @@ import java.io.IOException
 import java.util.EnumSet
 
 @AndroidEntryPoint
-class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListener {
+class InventoryFragment : Fragment(),
+  SurfaceHolder.Callback, CameraCaptureListener {
 
   private var _binding: FragmentInventoryBinding? = null
   private val binding get() = _binding!!
@@ -61,7 +64,6 @@ class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListe
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
-
     _binding = FragmentInventoryBinding.inflate(inflater, container, false)
     return binding.root
   }
@@ -70,18 +72,39 @@ class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListe
     super.onViewCreated(view, savedInstanceState)
     initView()
     collectData()
+    setListeners()
     viewModel.onViewCreated()
+  }
+
+  private fun setListeners() {
+    val sheetBehavior = BottomSheetBehavior.from(binding.inventoryBottomSheet.root)
+    sheetBehavior.addBottomSheetCallback(object : BottomSheetCallback() {
+      override fun onStateChanged(bottomSheet: View, newState: Int) {}
+      override fun onSlide(bottomSheet: View, slideOffset: Float) {
+        //header_Arrow_Image.setRotation(slideOffset * 180)
+      }
+    })
   }
 
   private fun collectData() {
     this.lifecycleScope.launch {
       viewModel.viewData.filterNotNull()
         .collect { inventoryViewData ->
-          with(binding.boxList) {
-            this.adapter = BoxAdapter(
-              inventoryViewData.boxList.toTypedArray(),
-              //this@BoxListFragment
-            )
+          if (inventoryViewData.boxList.isEmpty()) {
+
+          } else {
+            binding.inventoryBottomSheet.itemNumberInventoried.text =
+              inventoryViewData.inventoried.toString()
+            binding.inventoryBottomSheet.itemNumberTotal.text =
+              inventoryViewData.total.toString()
+            binding.inventoryBottomSheet.itemNumberPending.text =
+              inventoryViewData.pending.toString()
+            with(binding.inventoryBottomSheet.boxList) {
+              this.adapter = BoxAdapter(
+                inventoryViewData.boxList.toTypedArray(),
+                //this@BoxListFragment
+              )
+            }
           }
         }
     }
@@ -167,8 +190,8 @@ class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListe
     beepManager = BeepManager(this.requireActivity())
     ambientLightManager = AmbientLightManager(this.requireContext())
 
-    with(binding.boxList) {
-      layoutManager = LinearLayoutManager(context)
+    with(binding.inventoryBottomSheet.boxList) {
+      layoutManager = GridLayoutManager(context, 2)
       //  adapter = BoxContentRecyclerViewAdapter(PlaceholderContent.ITEMS)
       adapter = BoxAdapter(
         emptyArray(),
@@ -218,4 +241,29 @@ class InventoryFragment : Fragment(), SurfaceHolder.Callback, CameraCaptureListe
   }
   // endregion
 
+  private val REQUEST_CAMERA_PERMISSION = 1
+  private val FRAGMENT_DIALOG = "dialog"
+
+  /*override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<out String>,
+    grantResults: IntArray
+  ) {
+    //super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    when (requestCode) {
+      REQUEST_CAMERA_PERMISSION -> {
+        if (permissions.size != 1 || grantResults.size != 1) {
+          throw java.lang.RuntimeException("Error on requesting camera permission.")
+        }
+        if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+          Toast.makeText(
+            this.context,
+            R.string.camera_permission_not_granted,
+            Toast.LENGTH_SHORT
+          ).show()
+        }
+      }
+    }
+  }*/
+  // endregion
 }

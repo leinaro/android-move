@@ -1,4 +1,4 @@
-package com.leinaro.move
+package com.leinaro.move.presentation.splash
 
 import android.content.Intent
 import android.os.Bundle
@@ -23,6 +23,7 @@ class SplashActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     binding = ActivitySplashBinding.inflate(layoutInflater)
     setContentView(binding.root)
+  //  throw RuntimeException("Test Crash") // Force a crash
   }
 
   override fun onPostCreate(savedInstanceState: Bundle?) {

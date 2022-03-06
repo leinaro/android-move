@@ -2,8 +2,9 @@ package com.leinaro.move.presentation.boxlist
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.leinaro.move.BoxContent
+import com.leinaro.move.presentation.data.BoxContent
 import com.leinaro.move.R
 import com.leinaro.move.databinding.FragmentBoxListItemBinding
 
@@ -15,14 +16,6 @@ class BoxAdapter(
   interface Listener {
     fun onItemClickListener(boxContent: BoxContent?)
   }
-
-  /* private val inventory: MutableMap<String, BoxContent> = mutableMapOf()
-
-   init {
-     dataSet.map {
-       inventory[it.uuid] = it
-     }
-   }*/
 
   class ViewHolder(
     val binding: FragmentBoxListItemBinding,
@@ -40,12 +33,19 @@ class BoxAdapter(
 
     fun bind(boxContent: BoxContent) {
       this.boxContent = boxContent
-      binding.itemNumber.text = boxContent.uuid.take(8)
-      binding.content.text = "${boxContent.location} : ${boxContent.description}"
-      if (boxContent.inventoried){
-        binding.root.setBackgroundResource(R.color.result_points)
+      binding.itemNumber.text = "# ${boxContent.counter}"
+      binding.itemQr.text = boxContent.uuid
+      binding.itemPlace.text = "Lugar: ${boxContent.location}"
+      binding.content.text = boxContent.description
+      if (boxContent.inventoried) {
+        binding.card.setCardBackgroundColor(
+          ContextCompat.getColor(binding.root.context, R.color.result_points)
+        )
       } else {
-        binding.root.setBackgroundResource(R.color.white)
+        binding.card.setCardBackgroundColor(
+          ContextCompat.getColor(binding.root.context, R.color.white)
+          //ContextCompat.getColor(binding.root.context, R.color.viewfinder_laser)
+        )
       }
     }
   }

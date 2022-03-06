@@ -3,7 +3,7 @@ package com.leinaro.move.datasource.local.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.leinaro.move.BoxContent
+import com.leinaro.move.presentation.data.BoxContent
 
 @Entity
 data class BoxEntity(
@@ -15,7 +15,7 @@ data class BoxEntity(
   @PrimaryKey(autoGenerate = true) var id: Int? = null
 }
 
-fun BoxEntity?.toBoxContent(inventoried: Boolean): BoxContent? {
+fun BoxEntity?.toBoxContent(inventoried: Boolean = false): BoxContent? {
   return if (this == null) null
   else BoxContent(
     uuid = this.uuid.orEmpty(),

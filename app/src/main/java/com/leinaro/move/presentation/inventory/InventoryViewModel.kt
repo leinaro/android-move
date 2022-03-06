@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.zxing.Result
 import com.google.zxing.client.result.ParsedResultType
 import com.google.zxing.client.result.ResultParser
-import com.leinaro.move.BoxContent
-import com.leinaro.move.domain.usecase.getboxlist.GetBoxListInteractor
+import com.leinaro.move.presentation.data.BoxContent
+import com.leinaro.move.domain.usecase.getboxlistwithinvetorystatus.GetBoxListWithInventoryStatusInteractor
 import com.leinaro.move.domain.usecase.updateboxstatus.UpdateBoxStatusInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InventoryViewModel @Inject constructor(
-  private val getBoxListInteractor: GetBoxListInteractor,
+  private val getBoxListWithInventoryStatusInteractor: GetBoxListWithInventoryStatusInteractor,
   private val updateBoxStatusInteractor: UpdateBoxStatusInteractor,
 ) : ViewModel() {
   val viewData = MutableStateFlow<InventoryViewData?>(null)
@@ -31,10 +31,18 @@ class InventoryViewModel @Inject constructor(
 
   private fun getAllBoxes() {
     viewModelScope.launch(Dispatchers.IO) {
-      getBoxListInteractor.execute()
+      getBoxListWithInventoryStatusInteractor.execute()
         .collect { boxes ->
+          val inventoried = boxes.count { it.inventoried }
+          val total = boxes.count()
+          val pending = total - inventoried
           boxList = boxes
-          viewData.value = InventoryViewData(boxList = boxes)
+          viewData.value = InventoryViewData(
+            boxList = boxes,
+            inventoried = inventoried,
+            pending = pending,
+            total = total,
+          )
         }
     }
   }
@@ -84,4 +92,9 @@ class InventoryViewModel @Inject constructor(
   }
 }
 
-data class InventoryViewData(val boxList: List<BoxContent>)
+data class InventoryViewData(
+  val boxList: List<BoxContent>,
+  val inventoried: Int = 0,
+  val pending: Int = 0,
+  val total: Int = 0,
+)

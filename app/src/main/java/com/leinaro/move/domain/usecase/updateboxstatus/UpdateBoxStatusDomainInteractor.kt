@@ -1,6 +1,5 @@
 package com.leinaro.move.domain.usecase.updateboxstatus
 
-import com.leinaro.move.BoxContent
 import com.leinaro.move.domain.repository.LocalRepository
 import javax.inject.Inject
 

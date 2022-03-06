@@ -6,8 +6,10 @@ import com.leinaro.move.domain.usecase.getboxbyshortid.GetBoxByShortIdDomainInte
 import com.leinaro.move.domain.usecase.getboxbyshortid.GetBoxByShortIdInteractor
 import com.leinaro.move.domain.usecase.getboxlist.GetBoxListDomainInteractor
 import com.leinaro.move.domain.usecase.getboxlist.GetBoxListInteractor
-import com.leinaro.move.domain.usecase.saveimages.SaveImagesDomainInteractor
-import com.leinaro.move.domain.usecase.saveimages.SaveImagesInteractor
+import com.leinaro.move.domain.usecase.getboxlistwithinvetorystatus.GetBoxListWithInventoryStatusDomainInteractor
+import com.leinaro.move.domain.usecase.getboxlistwithinvetorystatus.GetBoxListWithInventoryStatusInteractor
+import com.leinaro.move.domain.usecase.saveimages.SaveBoxDomainInteractor
+import com.leinaro.move.domain.usecase.saveimages.SaveBoxInteractor
 import com.leinaro.move.domain.usecase.updateboxstatus.UpdateBoxStatusDomainInteractor
 import com.leinaro.move.domain.usecase.updateboxstatus.UpdateBoxStatusInteractor
 import dagger.Binds
@@ -30,13 +32,18 @@ abstract class UseCaseModule {
 
   @Binds
   abstract fun bindSaveImagesInteractor(
-    saveImagesInteractor: SaveImagesDomainInteractor
-  ): SaveImagesInteractor
+    saveImagesInteractor: SaveBoxDomainInteractor
+  ): SaveBoxInteractor
 
   @Binds
   abstract fun bindGetBoxListInteractor(
     getBoxListInteractor: GetBoxListDomainInteractor
   ): GetBoxListInteractor
+
+  @Binds
+  abstract fun bindGetBoxListWithInventoryStatusInteractor(
+    getBoxListWithInventoryStatusDomainInteractor: GetBoxListWithInventoryStatusDomainInteractor
+  ): GetBoxListWithInventoryStatusInteractor
 
   @Binds
   abstract fun bindUpdateBoxStatusInteractor(

@@ -2,7 +2,7 @@ package com.leinaro.move.presentation.boxlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.leinaro.move.BoxContent
+import com.leinaro.move.presentation.data.BoxContent
 import com.leinaro.move.domain.usecase.getboxlist.GetBoxListInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
