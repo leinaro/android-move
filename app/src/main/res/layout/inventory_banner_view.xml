@@ -1,0 +1,119 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:animateLayoutChanges="true"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:padding="12dp">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:id="@+id/initial_view"
+      app:layout_constraintTop_toTopOf="parent"
+      android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/initial_message"
+        android:ellipsize="end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:text="Agrega un lugar de llegada para tus cosas para poder iniciar tu trasteo." />
+
+    <Button
+        android:text="Agregar destino"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/init_button"
+        app:layout_constraintTop_toBottomOf="@id/initial_message"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      tools:visibility="visible"
+      android:id="@+id/start_inventory_view"
+      app:layout_constraintTop_toBottomOf="@id/initial_view">
+
+    <TextView
+        android:id="@+id/origin_inventory_title"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent=".5"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:text="Origen " />
+
+    <TextView
+        android:id="@+id/origin_inventory"
+        android:lines="1"
+        android:ellipsize="end"
+        app:layout_constraintStart_toStartOf="@id/origin_inventory_title"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent=".5"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/origin_inventory_title"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:text="Desconocido" />
+
+    <TextView
+        android:id="@+id/status"
+        android:lines="1"
+        android:ellipsize="end"
+        app:layout_constraintStart_toStartOf="@id/origin_inventory_title"
+        android:layout_width="wrap_content"
+        android:textColor="@color/possible_result_points"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/origin_inventory"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:text="Empacando" />
+
+    <TextView
+        android:id="@+id/destination_inventory_title"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/origin_inventory_title"
+        app:layout_constraintTop_toTopOf="@id/origin_inventory_title"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent=".5"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:text="Destino " />
+
+    <TextView
+        android:id="@+id/destination_inventory"
+        android:lines="1"
+        app:layout_constraintStart_toStartOf="@id/destination_inventory_title"
+        android:ellipsize="end"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent=".5"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/destination_inventory_title"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:text="Desconocido" />
+
+    <Button
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:text="@string/inventory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/start_inventory_button"
+        app:layout_constraintTop_toBottomOf="@id/status"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+  <View
+      android:layout_width="match_parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:layout_height="1dp"
+      android:background="@android:color/darker_gray" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

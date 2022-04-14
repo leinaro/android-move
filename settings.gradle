@@ -10,3 +10,6 @@ rootProject.name = "Move"
 include ':app'
 include ':validatable-fields'
 include ':permissions'
+include ':architecture-tools'
+include ':data'
+include ':domain'

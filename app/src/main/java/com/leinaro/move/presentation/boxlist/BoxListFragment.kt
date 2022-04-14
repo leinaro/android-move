@@ -2,25 +2,29 @@ package com.leinaro.move.presentation.boxlist
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
-import androidx.recyclerview.widget.GridLayoutManager
-import com.leinaro.move.presentation.data.BoxContent
+import com.leinaro.architecture_tools.getNavigationResult
+import com.leinaro.architecture_tools.setObserver
+import com.leinaro.move.R
 import com.leinaro.move.databinding.FragmentBoxListBinding
+import com.leinaro.move.domain.data.BoxContent
+import com.leinaro.move.domain.data.Inventory
+import com.leinaro.move.presentation.inventorybanner.InventoryBannerListener
 import com.leinaro.permissions.checkCameraPermission
 import com.leinaro.permissions.getRequestPermissionLauncher
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class BoxListFragment : Fragment(), BoxAdapter.Listener {
+class BoxListFragment : Fragment(), BoxAdapter.Listener, InventoryBannerListener,
+  SearchView.OnQueryTextListener {
 
   private val viewModel: BoxListViewModel by viewModels()
 
@@ -32,19 +36,31 @@ class BoxListFragment : Fragment(), BoxAdapter.Listener {
 
   val binding get() = _binding!!
 
+  private val isLargeLayout by lazy {
+    resources.getBoolean(R.bool.large_layout)
+  }
+
   // region LifeCycle
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
+    setHasOptionsMenu(true); // Add this! (as above)
     _binding = FragmentBoxListBinding.inflate(inflater, container, false)
     return binding.root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    setObservers()
-    viewModel.onViewCreated()
+    super.onViewCreated(view, savedInstanceState)
+    setObserver(viewModel)
+    //  viewModel.onViewCreated()
     setListeners()
+  }
+
+  override fun onResume() {
+    super.onResume()
+    viewModel.onViewCreated()
+
   }
   // endregion
 
@@ -54,40 +70,33 @@ class BoxListFragment : Fragment(), BoxAdapter.Listener {
       navigateToBoxDetailsActivity(it)
     }
   }
-  // end region
+  // endregion
+
+  // region InventoryBannerListener
+  override fun onStartInventoryClick() {
+    navigateToInventoryFragment()
+  }
+
+  override fun onInitInventoryClick() {
+    showDialog()
+  }
+  // endregion
 
   // region private methods
   private fun setListeners() {
     binding.addBoxButton.setOnClickListener { navigateToCaptureActivity() }
     binding.scanButton.setOnClickListener { navigateToCaptureActivity() }
-    binding.inventoryButton.setOnClickListener { navigateToInventoryFragment() }
-  }
-
-  private fun setObservers() {
-    this.lifecycleScope.launch {
-      viewModel.viewData.filterNotNull()
-        .collect { viewData ->
-          if (viewData.boxList.isEmpty()) {
-            binding.emptyMessage.isVisible = true
-          } else {
-            binding.itemNumber.text = "Cajas: ${viewData.boxList.count()}"
-            with(binding.list) {
-              this.layoutManager = GridLayoutManager(
-                this@BoxListFragment.requireContext(), 2
-              )
-              this.adapter = BoxAdapter(
-                viewData.boxList.toTypedArray(),
-                this@BoxListFragment
-              )
-            }
-            binding.list.isVisible = true
-          }
-        }
+    binding.inventoryBanner.setBannerListener(this)
+    getNavigationResult<Inventory>("inventory")?.observe(viewLifecycleOwner) { inventory ->
+      binding.inventoryBanner.setInventory(inventory)
     }
   }
 
   private fun navigateToBoxDetailsActivity(boxContent: BoxContent) {
-    val directions = BoxListFragmentDirections.navigateToBoxDetailsActivity(boxContent)
+    val directions = BoxListFragmentDirections.navigateToBoxDetailsActivity(
+      boxContent = boxContent,
+      inventoryId = viewModel.inventoryId
+    )
     NavHostFragment.findNavController(this).navigate(directions)
   }
 
@@ -103,9 +112,93 @@ class BoxListFragment : Fragment(), BoxAdapter.Listener {
     if (!checkCameraPermission(this, requestPermissionLauncher)) {
       return
     }
-    val directions = BoxListFragmentDirections.navigateToCaptureActivity()
+    val directions = BoxListFragmentDirections.navigateToCaptureActivity(viewModel.inventoryId)
     NavHostFragment.findNavController(this).navigate(directions)
   }
+
+  private fun showDialog() {
+    if (isLargeLayout) {
+      // The device is using a large layout, so show the fragment as a dialog
+      val directions = BoxListFragmentDirections.navigateToNewInventoryDialog()
+      NavHostFragment.findNavController(this).navigate(directions)
+    } else {
+      val directions = BoxListFragmentDirections.navigateToNewInventoryDialogFragment()
+      NavHostFragment.findNavController(this).navigate(directions)
+
+      //     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+      // To make it fullscreen, use the 'content' root view as the container
+      // for the fragment, which is always the root view for the activity
+      //   transaction
+      //  .add(android.R.id.content, newFragment)
+      // .addToBackStack(null)
+      // .commit()
+    }
+  }
   // endregion
+
+  override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    super.onCreateOptionsMenu(menu, inflater)
+    menu.clear()
+    inflater.inflate(R.menu.box_list_menu, menu);
+    val item: MenuItem = menu.findItem(R.id.action_search)
+    item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW or MenuItem.SHOW_AS_ACTION_IF_ROOM)
+
+    val searchView = item.actionView as SearchView
+    searchView.setOnQueryTextListener(this)
+
+    //getMenuInflater().inflate(R.menu.menu_main, menu)
+    //val searchItem: MenuItem = menu.findItem(R.id.action_search)
+    //val searchView = MenuItemCompat.getActionView(searchItem) as SearchView
+    //searchView.setOnQueryTextListener(this)
+    //return true
+  }
+
+  override fun onQueryTextChange(query: String): Boolean {
+    viewModel.filterBoxes(query)
+    return true
+  }
+
+  override fun onQueryTextSubmit(query: String?): Boolean {
+    return false
+  }
+
+/*  fun onEditStarted() {
+    if (mBinding.editProgressBar.getVisibility() !== View.VISIBLE) {
+      mBinding.editProgressBar.setVisibility(View.VISIBLE)
+      mBinding.editProgressBar.setAlpha(0.0f)
+    }
+    if (mAnimator != null) {
+      mAnimator.cancel()
+    }
+    mAnimator = ObjectAnimator.ofFloat<View>(mBinding.editProgressBar, View.ALPHA, 1.0f)
+    mAnimator.setInterpolator(AccelerateDecelerateInterpolator())
+    mAnimator.start()
+    mBinding.recyclerView.animate().alpha(0.5f)
+  }
+
+  fun onEditFinished() {
+    mBinding.recyclerView.scrollToPosition(0)
+    mBinding.recyclerView.animate().alpha(1.0f)
+    if (mAnimator != null) {
+      mAnimator.cancel()
+    }
+    mAnimator = ObjectAnimator.ofFloat<View>(mBinding.editProgressBar, View.ALPHA, 0.0f)
+    mAnimator.setInterpolator(AccelerateDecelerateInterpolator())
+    mAnimator.addListener(object : AnimatorListenerAdapter() {
+      private var mCanceled = false
+      override fun onAnimationCancel(animation: Animator) {
+        super.onAnimationCancel(animation)
+        mCanceled = true
+      }
+
+      override fun onAnimationEnd(animation: Animator) {
+        super.onAnimationEnd(animation)
+        if (!mCanceled) {
+          mBinding.editProgressBar.setVisibility(View.GONE)
+        }
+      }
+    })
+    mAnimator.start()
+  }*/
 }
 

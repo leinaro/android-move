@@ -8,18 +8,61 @@
     tools:context=".presentation.boxdetails.BoxDetailsActivity">
 
   <TextView
+      android:textStyle="bold"
       android:id="@+id/textFieldQrCode"
-      android:layout_width="match_parent"
+      android:textAlignment="textEnd"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@id/textFieldQrCodeLabel"
+      android:layout_width="0dp"
+      android:lines="1"
+      android:padding="6dp"
+      android:ellipsize="end"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toTopOf="@id/textFieldQrCodeLabel"
+      android:textAppearance="?attr/textAppearanceListItem"
+      tools:text="40458f06" />
+
+  <TextView
+      android:padding="6dp"
+      android:id="@+id/textFieldQrCodeLabel"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintLeft_toLeftOf="parent"
-      android:text="Codigo QR qwerew" />
+      app:layout_constraintStart_toStartOf="parent"
+      android:textAppearance="?attr/textAppearanceListItem"
+      android:text="Codigo QR" />
+
+  <TextView
+      android:textStyle="bold"
+      android:id="@+id/textFieldInventory"
+      android:textAlignment="textEnd"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@id/textFieldInventoryLabel"
+      android:layout_width="0dp"
+      android:lines="1"
+      android:padding="6dp"
+      android:ellipsize="end"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toTopOf="@id/textFieldInventoryLabel"
+      android:textAppearance="?attr/textAppearanceListItem"
+      tools:text="Bogota tunja" />
+
+  <TextView
+      android:padding="6dp"
+      android:id="@+id/textFieldInventoryLabel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintTop_toBottomOf="@id/textFieldQrCodeLabel"
+      app:layout_constraintStart_toStartOf="parent"
+      android:textAppearance="?attr/textAppearanceListItem"
+      android:text="Inventario" />
 
   <com.google.android.material.textfield.TextInputLayout
       android:id="@+id/textFieldLocation"
       android:layout_width="match_parent"
+      android:padding="6dp"
       android:layout_height="wrap_content"
-      app:layout_constraintTop_toBottomOf="@id/textFieldQrCode"
+      app:layout_constraintTop_toBottomOf="@id/textFieldInventoryLabel"
       app:layout_constraintLeft_toLeftOf="parent"
       android:hint="Ubicación">
 
@@ -31,6 +74,7 @@
   <com.google.android.material.textfield.TextInputLayout
       android:id="@+id/textFieldDescription"
       android:layout_width="match_parent"
+      android:padding="6dp"
       android:layout_height="wrap_content"
       app:layout_constraintTop_toBottomOf="@id/textFieldLocation"
       app:layout_constraintLeft_toLeftOf="parent"

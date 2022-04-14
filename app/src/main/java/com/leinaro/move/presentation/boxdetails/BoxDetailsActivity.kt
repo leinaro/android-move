@@ -16,16 +16,12 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.navArgs
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
+import com.leinaro.architecture_tools.setObserver
 import com.leinaro.move.BuildConfig
 import com.leinaro.move.databinding.ActivityBoxDetailsBinding
-import com.leinaro.move.databinding.ActivityMainBinding
 import com.leinaro.move.databinding.ImageItemBinding
 import com.leinaro.validatable_fields.bindTextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.launch
 import java.io.File
 
 /*inline fun <T : ViewBinding> AppCompatActivity.viewBinding(
@@ -37,8 +33,9 @@ import java.io.File
 @AndroidEntryPoint
 class BoxDetailsActivity : AppCompatActivity() {
 
-  private lateinit var binding: ActivityBoxDetailsBinding
-//  private val binding by viewBinding(ActivityBoxDetailsBinding::inflate)
+  lateinit var binding: ActivityBoxDetailsBinding
+
+  //  private val binding by viewBinding(ActivityBoxDetailsBinding::inflate)
   private val viewModel: BoxDetailsViewModel by viewModels()
   private val args: BoxDetailsActivityArgs? by navArgs()
 
@@ -50,7 +47,7 @@ class BoxDetailsActivity : AppCompatActivity() {
 
     //setContentView(binding.root)
     setListener()
-    setObserver()
+    setObserver(viewModel)
     bindFieldsValidator()
 
     val action: String? = intent?.action
@@ -70,6 +67,11 @@ class BoxDetailsActivity : AppCompatActivity() {
     viewModel.locationValidator.bindTextInputLayout(
       this,
       binding.textFieldLocation,
+      isOptional = true,
+    )
+    viewModel.descriptionValidator.bindTextInputLayout(
+      this,
+      binding.textFieldDescription,
       isOptional = true,
     )
   }
@@ -123,23 +125,6 @@ class BoxDetailsActivity : AppCompatActivity() {
     }
     binding.saveButton.setOnClickListener {
       viewModel.save()
-    }
-  }
-
-  private fun setObserver() {
-    this.lifecycleScope.launch {
-      viewModel.viewData.filterNotNull()
-        .collect {
-          binding.textFieldQrCode.text = it.boxContent.uuid
-          binding.textFieldLocation.editText?.setText(it.boxContent.location)
-          binding.textFieldDescription.editText?.setText(it.boxContent.description)
-
-          with(binding.photos) {
-            val bitmapList = it.bitmapList.toMutableList()
-            bitmapList.addAll(it.temporalBitmapList)
-            this.adapter = CustomAdapter(bitmapList.toTypedArray())
-          }
-        }
     }
   }
 }

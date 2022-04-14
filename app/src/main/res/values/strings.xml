@@ -95,11 +95,13 @@
   <string name="dummy_button">Dummy Button</string>
   <string name="move">MOVE</string>
   <string name="empty_box_list">No tienes elementos registrados</string>
-  <string name="inventory">Inventory</string>
+  <string name="inventory">Iniciar inventario</string>
   <string name="scan">scan</string>
   <string name="add_box">Agregar caja</string>
   <!-- region validator error -->
   <string name="required_field_error">Campo requerido</string>
   <string name="default_error">error</string>
+  <string name="bottom_navigation_menu_qr_list_label">Cajas</string>
+  <string name="bottom_navigation_menu_inventory_list_label">Inventarios</string>
   <!-- endregion -->
 </resources>

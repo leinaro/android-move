@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+      android:id="@+id/qr_list_fragment"
+      android:title="@string/bottom_navigation_menu_qr_list_label" />
+  <!--      android:icon="@drawable/ic_filter_1_black_24dp"-->
+
+  <item
+      android:id="@+id/inventory_list_fragment"
+      android:title="@string/bottom_navigation_menu_inventory_list_label" />
+</menu>

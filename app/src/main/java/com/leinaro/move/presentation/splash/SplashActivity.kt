@@ -6,8 +6,10 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.leinaro.move.BuildConfig
+import com.leinaro.move.R
 import com.leinaro.move.databinding.ActivitySplashBinding
-import com.leinaro.move.presentation.MainActivity
+import com.leinaro.move.presentation.main.MainActivity
 
 private const val UI_ANIMATION_DELAY = 1000L
 
@@ -37,6 +39,7 @@ class SplashActivity : AppCompatActivity() {
   }
 
   private fun showAppInfo() {
+    binding.version.text = BuildConfig.VERSION_NAME
     binding.fullscreenContentControls.isVisible = true
 
     // Schedule a runnable to remove the status and navigation bar after a delay

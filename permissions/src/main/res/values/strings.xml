@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="permission_title">Permisos</string>
+  <string name="ok">Ok</string>
+  <string name="cancel">Cancelar</string>
+  <string name="camera_permission_not_granted">Permiso no obtenido</string>
+  <string name="camera_permission_message">Necesitamos tu camara para escanear los código QR.</string>
+  <string name="camera_permission_on_settings_message">Necesitamos tu camara para escanear los código QR. Selecciona configuraciones, permisos y activa tu camara.</string>
+  <string name="not_now_action">Ahora no</string>
+  <string name="continue_action">Continuar</string>
+  <string name="settings_action">Configuraciones</string>
+
+</resources>

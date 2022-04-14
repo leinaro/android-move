@@ -70,7 +70,7 @@
       </intent-filter>
     </activity>
     <activity
-        android:name=".presentation.MainActivity"
+        android:name=".presentation.main.MainActivity"
         android:exported="true" />
 
     <provider

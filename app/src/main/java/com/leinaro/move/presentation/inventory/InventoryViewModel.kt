@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.zxing.Result
 import com.google.zxing.client.result.ParsedResultType
 import com.google.zxing.client.result.ResultParser
-import com.leinaro.move.presentation.data.BoxContent
+import com.leinaro.move.domain.data.BoxContent
 import com.leinaro.move.domain.usecase.getboxlistwithinvetorystatus.GetBoxListWithInventoryStatusInteractor
 import com.leinaro.move.domain.usecase.updateboxstatus.UpdateBoxStatusInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel

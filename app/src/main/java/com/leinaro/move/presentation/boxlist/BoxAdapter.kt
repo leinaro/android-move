@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.leinaro.move.presentation.data.BoxContent
 import com.leinaro.move.R
 import com.leinaro.move.databinding.FragmentBoxListItemBinding
+import com.leinaro.move.domain.data.BoxContent
 
 class BoxAdapter(
   private val dataSet: Array<BoxContent>,

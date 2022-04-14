@@ -1,8 +1,6 @@
 package com.leinaro.move.presentation.capture
 
-import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.zxing.Result
@@ -22,6 +20,8 @@ class CaptureViewModel @Inject constructor(
 
   val viewData = MutableStateFlow<CaptureViewData?>(null)
 
+  var inventoryId: Long = savedStateHandle.get<Long>("inventoryId") ?: -1L
+
   // Put up our own UI for how to handle the decoded contents.
   fun handleDecodeInternally(
     rawResult: Result,
@@ -30,7 +30,7 @@ class CaptureViewModel @Inject constructor(
     if (resultHandler is URIResultHandler) {
       val uri = Uri.parse(rawResult.text)
       if (uri.host == host && uri.scheme == scheme) {
-        viewData.value = CaptureViewData(uri)
+        viewData.value = CaptureViewData(uri, inventoryId)
       }
     }
     //showQRInfo(rawResult, resultHandler)
@@ -39,5 +39,6 @@ class CaptureViewModel @Inject constructor(
 }
 
 data class CaptureViewData(
-  val uri: Uri
+  val uri: Uri,
+  val inventoryId: Long
 )

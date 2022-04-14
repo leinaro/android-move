@@ -5,16 +5,26 @@ plugins {
   // Hilt
   id 'dagger.hilt.android.plugin'
   // Args
-  id 'androidx.navigation.safeargs'
+  id 'androidx.navigation.safeargs.kotlin'
+
   // Crashlytics
   id 'com.google.gms.google-services'
   id 'com.google.firebase.crashlytics'
 }
+
 hilt {
   enableExperimentalClasspathAggregation = true
 }
 
 android {
+  signingConfigs {
+    release {
+      storeFile file('/Users/inesrojas/Documents/keystore/move_release_keystore')
+      storePassword 'm0v31nv3nt0ry2o22'
+      keyPassword 'm0v31nv3nt0ry2o22'
+      keyAlias 'move'
+    }
+  }
   lintOptions {
     checkReleaseBuilds false
   }
@@ -39,7 +49,7 @@ android {
       resValue "string", "app_name", "@string/app_name_release"
       minifyEnabled true
       debuggable false
-      //signingConfig signingConfigs.release
+      signingConfig signingConfigs.release
     }
     debug {
       resValue "string", "app_name", "@string/app_name_debug"
@@ -86,25 +96,12 @@ dependencies {
   implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
   // endregion
 
-  // region Room
-  def room_version = "2.4.2"
-
-  implementation("androidx.room:room-runtime:$room_version")
-  kapt("androidx.room:room-compiler:$room_version")
-
-  // optional - Kotlin Extensions and Coroutines support for Room
-  // implementation("androidx.room:room-ktx:$room_version")
-
-  // optional - Guava support for Room, including Optional and ListenableFuture
-  //implementation "androidx.room:room-guava:$room_version"
-
-  // optional - Paging 3 Integration
-  //  implementation("androidx.room:room-paging:2.4.0-alpha04")
-  // endregion
-
   // region Modules
+  implementation project(path: ':domain')
+
   implementation project(path: ':validatable-fields')
   implementation project(path: ':permissions')
+  implementation project(path: ':architecture-tools')
   // endregion
 
   // region Work Manager

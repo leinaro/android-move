@@ -33,12 +33,12 @@ import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.navArgs
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.Result
-import com.leinaro.move.presentation.boxdetails.BoxDetailsActivity
 import com.leinaro.move.R
 import com.leinaro.move.databinding.ActivityCaptureBinding
-import com.leinaro.move.databinding.ActivityMainBinding
+import com.leinaro.move.presentation.boxdetails.BoxDetailsActivity
 import com.leinaro.move.presentation.capture.camera.CameraManager
 import com.leinaro.move.presentation.capture.result.ResultHandlerFactory
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,6 +68,8 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
   private var inactivityTimer: InactivityTimer? = null
   private var beepManager: BeepManager? = null
   private var ambientLightManager: AmbientLightManager? = null
+
+  val args: CaptureActivityArgs by navArgs()
 
   public override fun onCreate(icicle: Bundle?) {
     super.onCreate(icicle)
@@ -104,7 +106,9 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
     val intent = Intent(this@CaptureActivity, BoxDetailsActivity::class.java)
     intent.data = uri
     intent.action = Intent.ACTION_DEFAULT
+    intent.putExtra("inventoryId", args.inventoryId)
     startActivity(intent)
+    finish()
   }
 
   override fun onResume() {
@@ -466,5 +470,5 @@ class CaptureActivity : AppCompatActivity(), SurfaceHolder.Callback, CameraCaptu
     }
   }
 
-    private val TAG = CaptureActivity::class.java.simpleName
+  private val TAG = CaptureActivity::class.java.simpleName
 }

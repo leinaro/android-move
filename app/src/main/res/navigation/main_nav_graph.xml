@@ -2,14 +2,18 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_nav_graph"
-    app:startDestination="@id/boxListFragment">
+    android:id="@+id/main_nav_graph">
 
   <fragment
       android:id="@+id/boxListFragment"
       android:name="com.leinaro.move.presentation.boxlist.BoxListFragment"
       android:label="BoxListFragment"
       tools:layout="@layout/fragment_box_list">
+
+    <argument
+        android:name="inventoryId"
+        app:argType="long"
+        android:defaultValue="-1L" />
 
     <action
         android:id="@+id/navigate_to_box_details_activity"
@@ -23,7 +27,26 @@
         android:id="@+id/navigate_to_capture_activity"
         app:destination="@id/capture_activity" />
 
+    <action
+        android:id="@+id/navigate_to_new_inventory_dialog"
+        app:destination="@id/newInventoryDialog" />
+
+    <action
+        android:id="@+id/navigate_to_new_inventory_dialog_fragment"
+        app:destination="@id/newInventoryDialogFragment" />
+
   </fragment>
+
+  <dialog
+      android:id="@+id/newInventoryDialog"
+      android:name="com.leinaro.move.presentation.inventorybanner.NewInventoryDialogFragment"
+      android:label="Nuevo inventario" />
+
+  <fragment
+      android:id="@+id/newInventoryDialogFragment"
+      android:name="com.leinaro.move.presentation.inventorybanner.NewInventoryDialogFragment"
+      android:label="InventoryFragment"
+      tools:layout="Nuevo inventario" />
 
   <fragment
       android:id="@+id/inventoryFragment"
@@ -31,6 +54,18 @@
       android:label="InventoryFragment"
       tools:layout="@layout/fragment_inventory">
 
+  </fragment>
+
+  <fragment
+      android:id="@+id/inventoryListFragment"
+      android:name="com.leinaro.move.presentation.inventorylist.InventoryListFragment"
+      android:label="InventoryListFragment"
+      tools:layout="@layout/inventory_list_fragment">
+
+    <action
+        android:id="@+id/navigate_to_box_list_fragment"
+        app:destination="@id/boxListFragment" />
+    
   </fragment>
 
   <activity
@@ -41,8 +76,17 @@
 
     <argument
         android:name="boxContent"
-        app:argType="com.leinaro.move.presentation.data.BoxContent"
+        app:argType="com.leinaro.move.domain.data.BoxContent"
         app:nullable="true" />
+
+    <argument
+        android:name="inventoryId"
+        app:argType="long"
+        android:defaultValue="-1L" />
+    <!-- <argument
+         android:name="inventory"
+         app:argType="com.leinaro.move.domain.data.Inventory"
+         app:nullable="true" />-->
 
   </activity>
 
@@ -51,7 +95,10 @@
       android:name="com.leinaro.move.presentation.capture.CaptureActivity"
       android:label="Capture"
       tools:layout="@layout/activity_capture">
-
+    <argument
+        android:name="inventoryId"
+        app:argType="long"
+        android:defaultValue="-1L" />
   </activity>
   <!--
       <activity
