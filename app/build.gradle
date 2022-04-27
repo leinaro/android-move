@@ -17,14 +17,6 @@ hilt {
 }
 
 android {
-  signingConfigs {
-    release {
-      storeFile file('/Users/inesrojas/Documents/keystore/move_release_keystore')
-      storePassword 'm0v31nv3nt0ry2o22'
-      keyPassword 'm0v31nv3nt0ry2o22'
-      keyAlias 'move'
-    }
-  }
   lintOptions {
     checkReleaseBuilds false
   }
@@ -49,7 +41,6 @@ android {
       resValue "string", "app_name", "@string/app_name_release"
       minifyEnabled true
       debuggable false
-      signingConfig signingConfigs.release
     }
     debug {
       resValue "string", "app_name", "@string/app_name_debug"

@@ -1,6 +1,6 @@
 package com.leinaro.move.data.di
 
-import com.leinaro.move.data.DataBaseClient
+import com.leinaro.move.data.MoveDataBaseClient
 import com.leinaro.move.data.local.dao.BoxDao
 import com.leinaro.move.data.local.dao.ImageDao
 import com.leinaro.move.data.local.dao.InventoryDao
@@ -14,17 +14,16 @@ import dagger.hilt.components.SingletonComponent
 object DatabaseModule {
   @Provides
   fun providesBoxDao(
-    dataBase: DataBaseClient,
+    dataBase: MoveDataBaseClient,
   ): BoxDao = dataBase.db.boxDao()
 
   @Provides
   fun providesImageDao(
-    dataBase: DataBaseClient,
+    dataBase: MoveDataBaseClient,
   ): ImageDao = dataBase.db.imageDao()
 
   @Provides
   fun providesInventoryDao(
-    dataBase: DataBaseClient,
+    dataBase: MoveDataBaseClient,
   ): InventoryDao = dataBase.db.inventoryDao()
-
 }

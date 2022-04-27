@@ -31,8 +31,7 @@ import java.io.ByteArrayOutputStream
 )
 @TypeConverters(
   ImageBitmapString::class
-) // This will convert Bitmap to String and vice-versa;
-//@TypeConverters is defined below
+)
 abstract class MoveDataBase : RoomDatabase() {
   abstract fun boxDao(): BoxDao
   abstract fun imageDao(): ImageDao

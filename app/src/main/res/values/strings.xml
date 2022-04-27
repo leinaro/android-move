@@ -103,5 +103,7 @@
   <string name="default_error">error</string>
   <string name="bottom_navigation_menu_qr_list_label">Cajas</string>
   <string name="bottom_navigation_menu_inventory_list_label">Inventarios</string>
+  <string name="company_dragon_fly">Dragon Fly</string>
+  <string name="developer_leinaro_dev">Leinaro Dev</string>
   <!-- endregion -->
 </resources>
